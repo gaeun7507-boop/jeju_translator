@@ -1,0 +1,164 @@
+/* ==========================================================================
+   제주 사투리 번역기 스타일
+   ========================================================================== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --sky-top:#5b7fb4; --sky-mid:#e98a6b; --sky-low:#f6c177; --sky-bottom:#ffe6a7;
+  --chat-user:#2c6e8f; --chat-bot:#5a5148;
+  --wall-h: 18vh;
+}
+html, body { height: 100%; overflow: hidden;
+  font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; }
+
+/* ===== 배경(노을 하늘) ===== */
+.scene { position: fixed; inset: 0; z-index: 0; overflow: hidden;
+  background: linear-gradient(180deg, var(--sky-top) 0%, #8a7fb0 22%, var(--sky-mid) 52%,
+    var(--sky-low) 74%, var(--sky-bottom) 100%); }
+
+.sun { position: absolute; left: 50%; top: 30%; width: 120px; height: 120px;
+  transform: translate(-50%, -50%); border-radius: 50%;
+  background: radial-gradient(circle, #fff7e0 0%, #ffd27a 46%, #ff9d4d 76%, rgba(255,157,77,0) 100%);
+  box-shadow: 0 0 60px 24px rgba(255,190,110,.4); }
+
+/* 구름 */
+.cloud { position: absolute; background: rgba(255,255,255,.85); border-radius: 50px;
+  filter: blur(1px); opacity: .9; animation: drift linear infinite; }
+.cloud::before, .cloud::after { content: ""; position: absolute; background: inherit; border-radius: 50%; }
+.cloud.c1 { width: 120px; height: 34px; top: 12%; left: -160px; animation-duration: 70s; }
+.cloud.c1::before { width: 55px; height: 55px; top: -24px; left: 20px; }
+.cloud.c1::after { width: 40px; height: 40px; top: -16px; left: 62px; }
+.cloud.c2 { width: 90px; height: 26px; top: 20%; left: -140px; animation-duration: 95s; animation-delay: -30s; opacity: .75; }
+.cloud.c2::before { width: 42px; height: 42px; top: -18px; left: 16px; }
+.cloud.c2::after { width: 30px; height: 30px; top: -12px; left: 48px; }
+.cloud.c3 { width: 150px; height: 38px; top: 7%; left: -200px; animation-duration: 120s; animation-delay: -60s; opacity: .7; }
+.cloud.c3::before { width: 60px; height: 60px; top: -28px; left: 24px; }
+.cloud.c3::after { width: 46px; height: 46px; top: -18px; left: 74px; }
+@keyframes drift { from { transform: translateX(0); } to { transform: translateX(calc(100vw + 260px)); } }
+
+/* 한라산 — 상단에서도 봉우리가 보이도록 위로 올림 */
+.hallasan { position: absolute; bottom: calc(var(--wall-h) - 2vh); left: 50%;
+  transform: translateX(-50%); width: 140%; height: 46%; }
+.hallasan svg { width: 100%; height: 100%; display: block; }
+
+/* 감귤나무 */
+.tree { position: absolute; bottom: calc(var(--wall-h) - 3vh); z-index: 3; }
+.tree.left { left: 3%; width: 120px; }
+.tree.right { right: 4%; width: 150px; }
+.tree svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+
+/* 현무암 돌담 */
+.wall { position: absolute; bottom: 0; left: 0; width: 100%; height: var(--wall-h);
+  z-index: 2; }
+.wall svg { width: 100%; height: 100%; display: block; }
+
+/* ===== 공통 레이아웃 ===== */
+.app { position: relative; z-index: 10; height: 100%;
+  display: flex; align-items: center; justify-content: center; }
+.view { width: 100%; height: 100%; }
+.hidden { display: none !important; }
+
+/* ===== 랜딩 화면 ===== */
+.view-landing { display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px; padding: 24px; }
+.hero-dol { width: 150px; height: 150px; cursor: pointer;
+  filter: drop-shadow(0 12px 18px rgba(0,0,0,.3));
+  border-radius: 50%; overflow: hidden; transition: transform .18s;
+  animation: bob 3.2s ease-in-out infinite; }
+.hero-dol:hover { transform: scale(1.06) rotate(-2deg); }
+.hero-dol:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.hero-dol svg { width: 100%; height: 100%; display: block; }
+@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+.speech-bubble { position: relative; background: rgba(90,81,72,.94); color: #fff8ef;
+  padding: 16px 22px; border-radius: 20px; font-size: 20px; font-weight: 700; line-height: 1.45;
+  text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,.28); max-width: 88%; }
+.speech-tail { position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  border: 8px solid transparent; border-bottom-color: rgba(90,81,72,.94); }
+
+.start-btn { margin-top: 4px; border: none; cursor: pointer; font-family: inherit;
+  font-size: 17px; font-weight: 700; color: #fff; padding: 15px 30px; border-radius: 40px;
+  background: linear-gradient(135deg, #ff9f1c, #e8720e);
+  box-shadow: 0 8px 20px rgba(200,90,10,.4); transition: transform .12s, box-shadow .12s; }
+.start-btn b { font-weight: 900; }
+.start-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(200,90,10,.5); }
+.start-btn:active { transform: translateY(0); }
+.start-sub { color: #fff; font-size: 13px; opacity: .85; text-shadow: 0 1px 3px rgba(0,0,0,.3); }
+
+/* ===== 채팅 화면 ===== */
+/* 상단에 한라산이 보이도록 카드를 아래로 내림 */
+.view-chat { display: flex; align-items: flex-end; justify-content: center;
+  padding: 0 14px 14px; }
+.card { width: 100%; max-width: 540px; height: 84vh; display: flex; flex-direction: column;
+  background: rgba(255,255,255,.85); backdrop-filter: blur(10px);
+  border-radius: 26px; box-shadow: 0 18px 50px rgba(40,30,20,.4); overflow: hidden;
+  border: 1px solid rgba(255,255,255,.6); }
+
+.card-head { padding: 14px 16px; display: flex; align-items: center; gap: 11px;
+  background: linear-gradient(120deg, #4a6b8a, #7a5c46); color: #fff; }
+.back-btn { flex: none; width: 34px; height: 34px; border: none; border-radius: 50%; cursor: pointer;
+  background: rgba(255,255,255,.2); color: #fff; font-size: 18px; line-height: 1; }
+.back-btn:hover { background: rgba(255,255,255,.32); }
+.head-avatar { width: 42px; height: 42px; flex: none; border-radius: 50%; overflow: hidden; background: #fff; }
+.head-avatar svg { width: 100%; height: 100%; display: block; }
+.head-title { font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
+.head-sub { font-size: 12px; opacity: .88; margin-top: 2px; }
+
+/* 모드 토글 */
+.mode-toggle { display: flex; gap: 6px; padding: 10px 14px 4px; background: rgba(255,255,255,.4); }
+.mode-btn { flex: 1; border: 1px solid rgba(120,90,60,.25); background: rgba(255,255,255,.6);
+  color: #6b5544; font-family: inherit; font-size: 13.5px; font-weight: 700; padding: 9px 6px;
+  border-radius: 12px; cursor: pointer; transition: all .15s; }
+.mode-btn.active { background: linear-gradient(135deg, #ff9f1c, #e8720e); color: #fff;
+  border-color: transparent; box-shadow: 0 3px 10px rgba(200,90,10,.3); }
+
+.chat { flex: 1; overflow-y: auto; padding: 18px 16px; display: flex; flex-direction: column; gap: 15px; }
+.chat::-webkit-scrollbar { width: 7px; }
+.chat::-webkit-scrollbar-thumb { background: rgba(120,90,60,.35); border-radius: 10px; }
+
+.row { display: flex; gap: 10px; align-items: flex-end; max-width: 88%; }
+.row.bot { align-self: flex-start; }
+.row.user { align-self: flex-end; flex-direction: row-reverse; }
+.avatar { width: 44px; height: 44px; flex: none; border-radius: 50%; overflow: hidden;
+  box-shadow: 0 3px 8px rgba(0,0,0,.2); background: #fff; }
+.avatar svg { width: 100%; height: 100%; display: block; }
+
+.bubble { padding: 12px 15px; border-radius: 18px; font-size: 15px; line-height: 1.5;
+  word-break: break-word; box-shadow: 0 3px 10px rgba(0,0,0,.1); }
+.row.bot .bubble { background: var(--chat-bot); color: #fff8ef; border-bottom-left-radius: 5px; }
+.row.user .bubble { background: var(--chat-user); color: #fff; border-bottom-right-radius: 5px; }
+.bubble .label { display: block; font-size: 11px; font-weight: 700; opacity: .7; margin-bottom: 3px; }
+.bubble .orig { display: block; font-size: 12px; opacity: .72; margin-top: 6px; padding-top: 6px;
+  border-top: 1px dashed rgba(255,255,255,.35); }
+
+.typing span { display: inline-block; width: 7px; height: 7px; margin: 0 1px; border-radius: 50%;
+  background: #fff8ef; opacity: .6; animation: blink 1.2s infinite; }
+.typing span:nth-child(2) { animation-delay: .2s; }
+.typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 0%,60%,100% { transform: translateY(0); opacity: .4; } 30% { transform: translateY(-5px); opacity: 1; } }
+
+.composer { padding: 12px 14px; display: flex; gap: 9px; align-items: flex-end;
+  background: rgba(255,255,255,.55); border-top: 1px solid rgba(120,90,60,.15); }
+.composer textarea { flex: 1; resize: none; border: 1px solid rgba(120,90,60,.3); border-radius: 16px;
+  padding: 11px 14px; font-size: 15px; font-family: inherit; max-height: 110px; outline: none;
+  background: #fff; line-height: 1.4; }
+.composer textarea:focus { border-color: #7a5c46; }
+.send { flex: none; width: 46px; height: 46px; border: none; border-radius: 50%; cursor: pointer;
+  background: linear-gradient(135deg, #ff9f1c, #e8720e); color: #fff; font-size: 20px;
+  display: flex; align-items: center; justify-content: center; transition: transform .1s; }
+.send:hover { transform: scale(1.07); }
+.send:active { transform: scale(.95); }
+
+.hint { text-align: center; font-size: 11px; color: #7a5c46; padding: 4px 0 8px; opacity: .75; }
+
+/* ===== 반응형 ===== */
+@media (max-width: 480px) {
+  :root { --wall-h: 15vh; }
+  .view-chat { padding: 0; align-items: stretch; }
+  .card { border-radius: 0; max-width: 100%; height: 100%; }
+  .tree.left { width: 84px; } .tree.right { width: 104px; }
+  .hero-dol { width: 120px; height: 120px; }
+  .speech-bubble { font-size: 18px; }
+}
+@media (min-height: 720px) and (min-width: 481px) {
+  .card { height: 78vh; }
+}
