@@ -15,7 +15,7 @@ window.JEJU_CONFIG = {
   // ② 번역 기록을 저장할 구글 Apps Script 웹앱 배포 주소.
   //    (apps-script/Code.gs 를 배포한 뒤 나오는 /exec 주소)
   //    예: "https://script.google.com/macros/s/XXXX/exec"
-  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycby8neid5V5RVo8_G_4Mw02aMEhigLfEy10AhHvPAH7pq_DIyypUx23VaDhxmKb_Mf0C/exec",
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbx-Soj0ECeEdjlSP-XBILC-nSxvmJZT7qXjdFpFTeOuwWICgpNq9cBfThg7MtdduOMq/exec",
 
   // 번역 기록 저장 기능 켜기/끄기 (APPS_SCRIPT_URL 이 있어야 동작)
   ENABLE_LOGGING: true,
