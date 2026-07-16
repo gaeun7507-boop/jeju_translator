@@ -25,9 +25,28 @@ js/dictionary.js      제주어 사전 (단어·구·어미 규칙)
 js/translator.js      양방향 번역 엔진
 js/sheets.js          구글 시트 불러오기 / 기록 저장
 js/scene.js           배경·캐릭터 그리기
+js/sky.js             시간대·날씨 반영 (Open-Meteo + 비·눈 파티클)
 js/app.js             화면 전환·모드·채팅 로직
 apps-script/Code.gs   기록 저장용 Google Apps Script
 ```
+
+## 🌤 시간대와 날씨
+제주 현지의 **일출/일몰 시각과 실시간 날씨**에 따라 배경이 바뀝니다.
+[Open-Meteo](https://open-meteo.com) 한 번 호출로 둘 다 받아오며 API 키는 필요 없습니다.
+
+- 시간대 4종 — 일출 · 아침(낮) · 노을 · 밤
+- 날씨 4종 — 맑음 · 흐림 · 비 · 눈 (시간대 **위에 얹히는** 레이어)
+
+색은 전부 `style.css`의 `body[data-time]` / `body[data-weather]` 변수로 정의돼 있고,
+`scene.js`의 SVG(구름·한라산·돌담)가 그 변수를 참조합니다. **색을 바꾸려면 CSS만 고치면 됩니다.**
+
+확인해 보려면:
+```
+index.html?time=night&weather=snow      # time: sunrise|day|sunset|night
+                                        # weather: clear|cloudy|rain|snow
+```
+콘솔에서 `JejuSky.set({ time:"day", weather:"rain" })` · 자동으로 되돌리려면 `JejuSky.auto()`.
+네트워크가 안 되면 날씨는 맑음으로 두고 시간대만 로컬 시계로 맞춥니다.
 
 ## 🚀 GitHub Pages 배포
 1. 새 저장소를 만들고 이 폴더 전체를 올립니다.

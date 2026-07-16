@@ -1,11 +1,149 @@
+/* 배달의민족 꾸불림체 추가 */
+@font-face {
+    font-family: 'BMkkubulim';
+    src: url('BMkkubulim-Regular.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'WILDgag';
+    src: url('[KIM]WILDgag-Bold.ttf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Minguk';
+    src: url('YoonChildfundkoreaMinGuk.otf') format('opentype');
+}
+
 /* ==========================================================================
    제주 사투리 번역기 스타일
    ========================================================================== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 :root {
-  --sky-top:#5b7fb4; --sky-mid:#e98a6b; --sky-low:#f6c177; --sky-bottom:#ffe6a7;
   --chat-user:#2c6e8f; --chat-bot:#5a5148;
   --wall-h: 18vh;
+}
+
+/* ==========================================================================
+   시간대 테마 — body[data-time]
+   scene.js의 SVG(구름·한라산·돌담)가 아래 변수를 그대로 참조하므로,
+   여기 색만 바꾸면 배경 전체가 같이 따라온다.
+     --sky-bg        하늘 전체(해 주변 글로우 + 세로 그래디언트) — 유일하게 남은 그라데이션
+     --sun-fill/rim  해·달의 색면 두 겹 (그라데이션 아님)
+     --lit           돌담 림라이트
+     --mt-lit        한라산 사면에 내려긋는 빛 붓질
+     --mt-warm       초록/보라 사이에 섞는 황토빛 (broken color)
+     --haze          산자락 대기 안개
+     --cloud-1..4    구름 색면 4단 (아래 → 위)
+     --mt-far/near-* 먼 능선 / 본체 (본체는 그늘·중간·빛 3단)
+     --leaf-*        잎 색면 3단 · --fruit-* 감귤 3단 · --trunk-* 줄기 2단
+   기본값은 노을 — data-time이 없어도 노을로 보인다.
+   ========================================================================== */
+:root, body[data-time="sunset"] {
+  --sky-bg:
+    radial-gradient(72% 52% at 83% 38%,
+      rgba(255,233,182,.55) 0%, rgba(255,188,124,.26) 34%, rgba(255,160,110,0) 66%),
+    linear-gradient(180deg, #2e3566 0%, #43467a 12%, #63588f 26%, #8b6597 38%,
+      #b8748f 50%, #d98a80 60%, #ee9f6f 70%, #f9b978 80%, #ffd79a 90%, #ffe9b8 100%);
+  --sun-x: 83%; --sun-y: 38%; --sun-size: 120px;
+  --sun-fill: #fff4cf; --sun-rim: #ffc47e;
+  --sun-glow: 0 0 90px 36px rgba(255,196,128,.38);
+  --lit: #ffab72; --lit-strength: .5;
+  --haze: #ffd0a4; --haze-strength: .3;
+  --cloud-1:#fffdfb; --cloud-2:#ffe8de; --cloud-3:#f3c3c0; --cloud-4:#d99ba6;
+  --mt-far-1:#8f7fae; --mt-far-2:#66608c;
+  --mt-near-1:#5e5689; --mt-near-2:#443f68; --mt-near-3:#2c2848;
+  --mt-lit: #ffab72; --mt-warm: #d98a6b; --snow-cap: #f6eef4;
+  --leaf-dark:#2b3f31; --leaf:#456b44; --leaf-lit:#7e9a57;
+  --fruit-dark:#a8500e; --fruit:#e08a2e; --fruit-lit:#f7c46a;
+  --trunk-dark:#432914; --trunk:#6b4423;
+  --stone-a:#443f49; --stone-b:#363139; --stone-c:#514b58;
+  --stone-lit:#c08a66; --stone-dark:#1c1822; --stone-gap:#221e29;
+  --grass:#4a5236;
+  --terrain-bright: 1; --terrain-sat: 1;
+  --star-opacity: 0;
+  --veil-strength: .9;
+}
+
+/* 일출 — 노을보다 차갑고 맑은 분홍, 해는 수평선 가까이 */
+body[data-time="sunrise"] {
+  --sky-bg:
+    radial-gradient(66% 48% at 80% 62%,
+      rgba(255,224,190,.5) 0%, rgba(255,178,140,.22) 36%, rgba(255,150,120,0) 68%),
+    linear-gradient(180deg, #1b2a58 0%, #2f3f74 14%, #55538d 28%, #85699c 40%,
+      #b5789a 52%, #dd9189 63%, #f4ab84 74%, #ffc894 85%, #ffe3b4 100%);
+  --sun-x: 80%; --sun-y: 62%; --sun-size: 108px;
+  --sun-fill: #fff6e2; --sun-rim: #ffb894;
+  --sun-glow: 0 0 80px 30px rgba(255,180,150,.34);
+  --lit: #ffc08a; --lit-strength: .42;
+  --haze: #ffd9be; --haze-strength: .34;
+  --cloud-1:#fffdfd; --cloud-2:#fbe7ec; --cloud-3:#e9bfcd; --cloud-4:#c894ac;
+  --mt-far-1:#8281b6; --mt-far-2:#5c5f92;
+  --mt-near-1:#55588c; --mt-near-2:#3c406c; --mt-near-3:#26294c;
+  --mt-lit: #ffc08a; --mt-warm: #c9808c; --snow-cap: #f7f0f6;
+  --leaf-dark:#283a32; --leaf:#3f6244; --leaf-lit:#6f8b57;
+  --fruit-dark:#9a4a12; --fruit:#d17f36; --fruit-lit:#f0bb76;
+  --trunk-dark:#3d2616; --trunk:#5f3d24;
+  --stone-a:#4f4b58; --stone-b:#3f3b48; --stone-c:#5b5768;
+  --stone-lit:#d5a394; --stone-dark:#1f1c28; --stone-gap:#131119;
+  --grass:#454d34;
+  --terrain-bright: 1; --terrain-sat: 1;
+  --star-opacity: .18;
+  --veil-strength: .85;
+}
+
+/* 아침·낮 — 맑은 파란 하늘, 해는 높이 */
+body[data-time="day"] {
+  --sky-bg:
+    radial-gradient(58% 44% at 78% 16%,
+      rgba(255,250,225,.5) 0%, rgba(255,244,200,.18) 38%, rgba(255,240,190,0) 70%),
+    linear-gradient(180deg, #2f6fb5 0%, #4a86c8 16%, #6ba4dd 34%, #92c2ec 54%,
+      #b8daf5 72%, #d8ecfb 88%, #eaf5fd 100%);
+  --sun-x: 78%; --sun-y: 15%; --sun-size: 96px;
+  --sun-fill: #fffdf0; --sun-rim: #ffe487;
+  --sun-glow: 0 0 100px 40px rgba(255,246,200,.5);
+  --lit: #fff0bd; --lit-strength: .34;
+  --haze: #d4e6f2; --haze-strength: .5;
+  --cloud-1:#ffffff; --cloud-2:#f2f7fc; --cloud-3:#d3e0ec; --cloud-4:#adc0d4;
+  /* 먼 능선은 대기에 씻겨 푸르게, 본체는 everswap의 초록 3단 */
+  --mt-far-1:#93b3c6; --mt-far-2:#6d90a8;
+  --mt-near-1:#6f9a4e; --mt-near-2:#4a7343; --mt-near-3:#2c4a35;
+  --mt-lit: #c2d466; --mt-warm: #d9a04a; --snow-cap: #f4f8fa;
+  --leaf-dark:#2d4a30; --leaf:#4f7c42; --leaf-lit:#93b757;
+  --fruit-dark:#b8600f; --fruit:#e8912f; --fruit-lit:#ffcf72;
+  --trunk-dark:#4a3018; --trunk:#75502c;
+  --stone-a:#494e57; --stone-b:#393e46; --stone-c:#565c67;
+  --stone-lit:#93a0b0; --stone-dark:#1d2127; --stone-gap:#23272e;
+  --grass:#54603a;
+  --terrain-bright: 1; --terrain-sat: 1;
+  --star-opacity: 0;
+  --veil-strength: 1;
+}
+
+/* 밤 — 짙은 남색, 해 자리에 달, 별이 뜬다 */
+body[data-time="night"] {
+  --sky-bg:
+    radial-gradient(48% 34% at 78% 22%,
+      rgba(200,220,255,.16) 0%, rgba(160,190,255,.07) 40%, rgba(140,175,255,0) 72%),
+    linear-gradient(180deg, #05091b 0%, #0a1230 14%, #131d45 30%, #1e2a56 46%,
+      #2a3866 62%, #38476f 78%, #4a5a7e 92%, #5d6d8c 100%);
+  --sun-x: 78%; --sun-y: 22%; --sun-size: 62px;
+  --sun-fill: #f7f9ff; --sun-rim: #c3cee8;
+  --sun-glow: 0 0 60px 18px rgba(190,210,255,.22);
+  --lit: #a8c2f0; --lit-strength: .3;
+  --haze: #4d5f8a; --haze-strength: .36;
+  --cloud-1:#8b97b8; --cloud-2:#6e7b9c; --cloud-3:#4c587a; --cloud-4:#333d5c;
+  --mt-far-1:#3f4a78; --mt-far-2:#2b3357;
+  --mt-near-1:#293155; --mt-near-2:#1a2039; --mt-near-3:#0e1224;
+  --mt-lit: #8ba6da; --mt-warm: #5b5578; --snow-cap: #dce6f7;
+  --leaf-dark:#16241f; --leaf:#22382c; --leaf-lit:#37543a;
+  --fruit-dark:#5b3116; --fruit:#8a5a2c; --fruit-lit:#b08a4e;
+  --trunk-dark:#1d130b; --trunk:#302015;
+  --stone-a:#2f333d; --stone-b:#262a33; --stone-c:#393e4a;
+  --stone-lit:#5d6b85; --stone-dark:#121419; --stone-gap:#080a0f;
+  --grass:#2a3124;
+  --terrain-bright: 1; --terrain-sat: 1;
+  --star-opacity: 1;
+  --veil-strength: .38;
 }
 html, body { height: 100%; overflow: hidden;
   font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
@@ -13,31 +151,50 @@ html, body { height: 100%; overflow: hidden;
   -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
   letter-spacing: -.01em; }
 
-/* ===== 배경(노을 하늘) =====
-   실제 제주 노을처럼 위는 짙은 남보라, 아래로 갈수록 보라 → 장미 → 코랄 → 금빛.
-   해 주변엔 따로 방사형 글로우를 얹어 빛이 번지는 느낌을 만든다. */
+/* ===== 배경(하늘) =====
+   색은 body[data-time] 테마가 --sky-bg로 정한다.
+   기본(노을)은 위가 짙은 남보라, 아래로 갈수록 보라 → 장미 → 코랄 → 금빛. */
 .scene { position: fixed; inset: 0; z-index: 0; overflow: hidden;
-  background:
-    radial-gradient(72% 52% at 83% 38%,
-      rgba(255,233,182,.55) 0%, rgba(255,188,124,.26) 34%, rgba(255,160,110,0) 66%),
-    linear-gradient(180deg,
-      #2e3566 0%,
-      #43467a 12%,
-      #63588f 26%,
-      #8b6597 38%,
-      #b8748f 50%,
-      #d98a80 60%,
-      #ee9f6f 70%,
-      #f9b978 80%,
-      #ffd79a 90%,
-      #ffe9b8 100%); }
+  background: var(--sky-bg); }
 
-/* 해 — 오른쪽, 한라산에 살짝 걸치도록 (돌하르방과 겹치지 않게) */
-.sun { position: absolute; left: 83%; top:38%; width: 120px; height: 120px;
-  transform: translate(-50%, -50%); border-radius: 50%;
-  background: radial-gradient(circle, #fffdf2 0%, #fff0c4 32%, #ffce7e 58%,
-    #ffab5e 78%, rgba(255,160,90,0) 100%);
-  box-shadow: 0 0 90px 36px rgba(255,196,128,.38); }
+/* 해·달 — 오른쪽, 한라산에 살짝 걸치도록 (돌하르방과 겹치지 않게)
+   위치·크기·빛번짐은 CSS, 원반 자체는 scene.js가 넣는 SVG(색면 2겹 + 붓 필터).
+   밤에는 같은 요소가 달이 된다. */
+.sun { position: absolute;
+  left: calc(var(--sun-x) + var(--sun-nudge-x, 0%));
+  top: calc(var(--sun-y) + var(--sun-nudge-y, 0%));
+  width: var(--sun-size); height: var(--sun-size);
+  transform: translate(-50%, -50%) scale(var(--sun-scale, 1)); border-radius: 50%;
+  box-shadow: var(--sun-glow);
+  transition: left .9s ease, top .9s ease, width .9s ease, height .9s ease,
+    opacity .9s ease, filter .9s ease; }
+.sun svg { width: 100%; height: 100%; display: block; }
+
+/* 캔버스 결 — 화면 전체에 아주 옅게 한 겹 (유화의 천 질감)
+   SVG feTurbulence를 data URI로 넣어 외부 이미지 없이 처리한다. */
+.grain { position: absolute; inset: 0; z-index: 7; pointer-events: none;
+  opacity: .05; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+/* 별 — 밤에만 (--star-opacity) */
+.stars { position: absolute; inset: 0; opacity: var(--star-opacity);
+  transition: opacity 1.2s ease; pointer-events: none; }
+.stars span { position: absolute; border-radius: 50%; background: #fff;
+  box-shadow: 0 0 4px 1px rgba(255,255,255,.5);
+  animation: twinkle 4.5s ease-in-out infinite; }
+@keyframes twinkle { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+
+/* 날씨 베일 — 시간대 위에 얹는 한 겹(흐림·비·눈)
+   세기는 시간대가 정한다(--veil-strength): 낮의 흐림은 뿌옇게 덮어야 하지만,
+   밤에 같은 세기로 덮으면 짙은 남색이 회색으로 바래 밤처럼 보이지 않는다. */
+.veil { position: absolute; inset: 0; z-index: 5; pointer-events: none;
+  background: var(--veil, transparent);
+  opacity: var(--veil-strength, 1);
+  transition: background 1s ease, opacity 1s ease; }
+
+/* 비·눈 파티클 캔버스 */
+.wx { position: absolute; inset: 0; z-index: 6; width: 100%; height: 100%;
+  pointer-events: none; }
 
 /* 구름 — scene.js가 몽글몽글한 SVG를 넣어준다 */
 .cloud { position: absolute; animation: drift linear infinite; }
@@ -48,21 +205,73 @@ html, body { height: 100%; overflow: hidden;
 .cloud.c4 { width: 165px; top: 27%; left: -230px; animation-duration: 118s; animation-delay: -88s; opacity: .6; }
 @keyframes drift { from { transform: translateX(0); } to { transform: translateX(calc(100vw + 340px)); } }
 
-/* 한라산 — 봉우리를 오른쪽으로 옮김(왼쪽 UI·해와 겹치지 않게) */
-.hallasan { position: absolute; bottom: calc(var(--wall-h) - 2vh); left: 70%;
-  transform: translateX(-50%); width: 140%; height: 36%; }
+/* 한라산 — 봉우리는 viewBox 안에서 오른쪽(x=680)에 그려져 있다.
+   여기서 width를 100% 넘게 주면 그 봉우리와 사면 붓질이 화면 밖으로 잘려나간다. */
+.hallasan { position: absolute; bottom: calc(var(--wall-h) - 2vh); left: 50%;
+  transform: translateX(-50%); width: 100%; height: 57%; }
 .hallasan svg { width: 100%; height: 100%; display: block; }
 
-/* 감귤나무 — 두 그루를 모두 왼쪽으로 모아 붙임 */
-.tree { position: absolute; bottom: calc(var(--wall-h) - 3vh); z-index: 3; }
-.tree.left { left: 1%; width: 150px; }
-.tree.right { left: 9%; width: 120px; }
-.tree svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
+/* 감귤나무 — 두 그루를 왼쪽에 모아 붙여 작은 과수원처럼.
+   앞뒤로 겹쳐야 숲처럼 보이므로 오른쪽 그루를 뒤(z-index 낮게)로 보낸다. */
+.tree { position: absolute; bottom: calc(var(--wall-h) - 3vh); z-index: 4; }
+.tree.left { left: -1%; width: 250px; }
+.tree.right { left: 11%; width: 196px; z-index: 3; }
+/* 감귤나무·돌담은 자체 색이 고정이라(초록·현무암) 테마별 명암으로 시간대를 맞춘다 */
+.tree svg { width: 100%; height: auto; display: block;
+  filter: drop-shadow(0 6px 8px rgba(0,0,0,.25))
+    brightness(calc(var(--terrain-bright) * var(--wx-bright, 1)))
+    saturate(calc(var(--terrain-sat) * var(--wx-sat, 1)));
+  transition: filter 1s ease; }
+/* 시간대는 --terrain-*, 날씨는 --wx-* 를 쓰고 둘을 곱한다.
+   날씨가 덮어쓰게 두면 "밤에 오는 비"가 맑은 밤보다 밝아지는 모순이 생긴다. */
 
-/* 현무암 돌담 */
+/* 현무암 돌담
+   #scene 안 레이어 순서 — 한라산(auto=0) < 조랑말(1) < 돌담(2) < 나무(3·4) < 베일(5).
+   담이 음수 z-index 면 한라산·나무가 무조건 담 위로 올라와, 그 사이에 조랑말을
+   끼워 넣을 자리가 없다. 그래서 담을 양수로 올리고 나무를 한 칸씩 밀었다. */
 .wall { position: absolute; bottom: 0; left: 0; width: 100%; height: var(--wall-h);
-  z-index: -1; }
-.wall svg { width: 100%; height: 100%; display: block; }
+  z-index: 2; }
+.wall svg { width: 100%; height: 100%; display: block;
+  filter: brightness(calc(var(--terrain-bright) * var(--wx-bright, 1)))
+    saturate(calc(var(--terrain-sat) * var(--wx-sat, 1)));
+  transition: filter 1s ease; }
+
+/* ==========================================================================
+   날씨 — body[data-weather] · 시간대 위에 얹는 레이어
+   시간대 4종 × 날씨 4종을 16개로 따로 그리지 않고 곱으로 처리한다.
+   ========================================================================== */
+/* 맑음 — 해를 조금 더 쨍하게, 그 외엔 시간대 그대로 */
+body[data-weather="clear"] .sun { filter: brightness(1.12); }
+
+/* 흐림 — 회색 베일 + 해를 구름 뒤로 흐리게 + 구름을 잿빛으로 */
+body[data-weather="cloudy"] {
+  --veil: linear-gradient(180deg, rgba(126,134,148,.5), rgba(150,156,166,.34));
+  --cloud-1:#e8ebef; --cloud-2:#ccd2da; --cloud-3:#a8b0bc; --cloud-4:#858e9e;
+  --lit-strength: .16; --wx-bright: .88; --wx-sat: .72;
+}
+body[data-weather="cloudy"] .sun { opacity: .28; filter: blur(7px); }
+body[data-weather="cloudy"] .cloud { opacity: 1; }
+
+/* 비 — 흐림보다 더 어둡고 푸른 베일, 해는 가림 */
+body[data-weather="rain"] {
+  --veil: linear-gradient(180deg, rgba(58,72,92,.56), rgba(84,98,118,.42));
+  --cloud-1:#c9cfd8; --cloud-2:#a7afbc; --cloud-3:#7f8899; --cloud-4:#5c6577;
+  --lit-strength: .1; --wx-bright: .74; --wx-sat: .66;
+}
+body[data-weather="rain"] .sun { opacity: .1; filter: blur(10px); }
+
+/* 눈 — 밝고 푸르스름하게 깔리는 베일 */
+body[data-weather="snow"] {
+  --veil: linear-gradient(180deg, rgba(196,212,232,.44), rgba(222,232,244,.34));
+  --cloud-1:#f2f5f9; --cloud-2:#dde4ee; --cloud-3:#c1cbdb; --cloud-4:#9fabc0;
+  --lit-strength: .14; --wx-bright: .94; --wx-sat: .6;
+}
+body[data-weather="snow"] .sun { opacity: .2; filter: blur(8px); }
+
+/* 구름이 낀 날엔 별도 가린다 (맑은 밤에만 총총) */
+body[data-weather="cloudy"] .stars,
+body[data-weather="rain"] .stars,
+body[data-weather="snow"] .stars { opacity: calc(var(--star-opacity) * .15); }
 
 /* ===== 공통 레이아웃 ===== */
 .app { position: relative; z-index: 10; height: 100%;
@@ -96,21 +305,24 @@ html, body { height: 100%; overflow: hidden;
 .hero-dol svg { width: 100%; height: 100%; display: block; }
 @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-.speech-bubble { position: relative; background: rgba(90,81,72,.94); color: #fff8ef;
-  padding: 20px 28px; border-radius: 22px; font-size: 24px; font-weight: 700; line-height: 1.45;
-  text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,.28); max-width: 320px; }
+.speech-bubble { 
+  position: relative; background: rgba(90,81,72,.94); color: #fff8ef;
+  padding: 20px 28px; border-radius: 22px; font-size: 30px; font-weight: 700; line-height: 1.45;
+  text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,.28); max-width: 320px; 
+  font-family: 'Minguk', sans-serif; /* 👈 이 줄이 추가되었습니다 */
+}
 /* 말풍선이 돌하르방 오른쪽에 있으므로 꼬리는 왼쪽을 향함 */
 .speech-tail { position: absolute; top: 50%; left: -14px; transform: translateY(-50%);
   border: 8px solid transparent; border-right-color: rgba(90,81,72,.94); }
 
-.start-btn { margin-top: 4px; border: none; cursor: pointer; font-family: inherit;
+/* 수정된 버튼 스타일 */
+.start-btn { 
+  margin-top: 4px; border: none; cursor: pointer; 
+  font-family: 'Minguk', sans-serif; /* 👈 이 부분이 수정되었습니다 */
   font-size: 21px; font-weight: 700; color: #fff; padding: 18px 42px; border-radius: 44px;
   background: linear-gradient(135deg, #ff9f1c, #e8720e);
-  box-shadow: 0 8px 20px rgba(200,90,10,.4); transition: transform .12s, box-shadow .12s; }
-.start-btn b { font-weight: 900; }
-.start-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(200,90,10,.5); }
-.start-btn:active { transform: translateY(0); }
-.start-sub { color: #fff; font-size: 15px; opacity: .85; text-shadow: 0 1px 3px rgba(0,0,0,.3); }
+  box-shadow: 0 8px 20px rgba(200,90,10,.4); transition: transform .12s, box-shadow .12s; 
+}
 
 /* ===== 채팅 화면 ===== */
 /* 번역 대화창 카드를 화면 세로 중앙에 배치 */
@@ -190,7 +402,9 @@ html, body { height: 100%; overflow: hidden;
   .view-landing { padding: 24px 16px 24px 5%; align-items: flex-start; }
   .landing-top { gap: 10px; }
   .speech-bubble { font-size: 16px; max-width: 190px; padding: 12px 16px; }
-  .sun { left: 80%; top: 24%; width: 92px; height: 92px; }
+  /* 해·달 위치는 테마가 정하므로 좌표를 다시 쓰지 않고 '밀어주기'만 한다
+     (여기서 top/left를 고정하면 밤의 달까지 노을 해 자리로 끌려온다) */
+  :root { --sun-nudge-x: -3%; --sun-nudge-y: -14%; --sun-scale: .78; }
 }
 @media (min-height: 720px) and (min-width: 481px) {
   .card { height: 78vh; }
@@ -200,7 +414,8 @@ html, body { height: 100%; overflow: hidden;
    부가 기능 — 왼쪽 위 사전 / 오른쪽 레일 / 모달
    ========================================================================== */
 /* 대화창이 열리면 크롬 숨김 */
-.chat-open .app-chrome, .chat-open .app-rail { display: none; }
+.chat-open .app-chrome, .chat-open .app-rail,
+.chat-open .pony-cta, .chat-open .pony-lane { display: none; }
 
 .app-chrome { position: fixed; top: 20px; left: 20px; z-index: 40; }
 .chrome-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px;
@@ -210,15 +425,85 @@ html, body { height: 100%; overflow: hidden;
 .chrome-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(40,30,20,.3); }
 .chrome-btn svg { width: 20px; height: 20px; color: #e8720e; }
 
-.app-rail { position: fixed; top: 50%; right: 20px; transform: translateY(-50%); z-index: 40;
-  display: flex; flex-direction: column; gap: 12px; }
-.rail-btn { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 74px; padding: 13px 6px;
+.app-rail { position: fixed; top: 20px; right: 20px; z-index: 40;
+  display: flex; flex-direction: row; gap: 12px; }
+.rail-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+  width: 65px; height: 65px; padding: 6px;
   background: rgba(255,255,255,.85); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.7);
   border-radius: 18px; cursor: pointer; font-family: inherit; font-size: 11.5px; font-weight: 700; line-height: 1.25;
   color: #5a5148; text-align: center; box-shadow: 0 6px 18px rgba(40,30,20,.22);
   transition: transform .12s, box-shadow .12s, background .12s; }
-.rail-btn:hover { transform: translateX(-3px); background: #fff; box-shadow: 0 10px 24px rgba(40,30,20,.3); }
+.rail-btn:hover { transform: translateY(-3px); background: #fff; box-shadow: 0 10px 24px rgba(40,30,20,.3); }
 .rail-btn svg { width: 25px; height: 25px; color: #e8720e; }
+
+/* ==========================================================================
+   제주마 — 오른쪽 아래, 돌담 너머에 서 있다
+   #scene 안 레이어 순서는 한라산(auto=0) < 말(1) < 돌담(2) < 나무(3·4).
+   말풍선 버튼만 body 에 두고(z-index:40), 말 자체는 #scene 안이라 담이 가려준다.
+   레인 아래쪽 22px 은 돌담 높이 안이라 담이 발굽을 덮는다 —
+   다 자란 말은 다리가 길어야 하므로 딱 발굽까지만 가린다.
+   ========================================================================== */
+.pony-lane { position: absolute; right: 0; bottom: calc(var(--wall-h) - 22px);
+  width: 320px; height: 193px; overflow: hidden; z-index: 1; pointer-events: none; }
+.pony { position: absolute; bottom: 0; right: 30px; width: 240px; height: 193px;
+  /* 다 자란 제주마의 어두운 밤색(dark bay) */
+  --pony:#6b4a2e; --pony-shade:#3a2717; --pony-lit:#b98a52; --pony-warm:#c08340;
+  --pony-mane:#221709; --hoof:#191109;
+  animation: ponyIdle 21s ease-in-out infinite;
+  /* 나무·돌담과 같은 방식으로 시간대·날씨 명암을 따라간다 */
+  filter: drop-shadow(0 5px 7px rgba(0,0,0,.22))
+    brightness(calc(var(--terrain-bright) * var(--wx-bright, 1)))
+    saturate(calc(var(--terrain-sat) * var(--wx-sat, 1)));
+  transition: filter 1s ease; }
+.pony svg { width: 100%; height: 100%; display: block; overflow: visible; }
+
+/* 원점은 viewBox 좌표 — 목은 기갑에서, 꼬리는 엉덩이에서 돈다 */
+.pony-head { transform-origin: 100px 46px; animation: ponyGraze 17s ease-in-out infinite; }
+.pony-tail { transform-origin: 196px 54px; animation: ponySwish 3.4s ease-in-out infinite; }
+
+/* 자리를 뜨지 않는다 — 무게중심만 앞뒤로 아주 조금 옮긴다 */
+@keyframes ponyIdle {
+  0%, 100% { transform: translate(0, 0); }
+  30%      { transform: translate(-5px, .5px); }
+  62%      { transform: translate(-2px, -1px); }
+  82%      { transform: translate(3px, 0); }
+}
+/* 풀을 뜯듯 고개를 숙였다가 들고, 한 번은 이쪽으로 돌아본다.
+   머리가 원점(어깨) 왼쪽에 있어 양수 회전은 고개가 올라간다 — 숙이려면 음수.
+   scaleX 로 목을 줄이면 정면으로 고개를 트는 것처럼 보인다(단축법). */
+@keyframes ponyGraze {
+  0%, 6%   { transform: rotate(0deg); }
+  16%      { transform: rotate(-9deg); }
+  26%, 38% { transform: rotate(-23deg); }
+  44%      { transform: rotate(-19deg); }
+  54%      { transform: rotate(0deg); }
+  60%      { transform: rotate(4deg); }
+  68%, 78% { transform: rotate(2deg) scaleX(.82); }
+  88%      { transform: rotate(-2deg); }
+}
+@keyframes ponySwish {
+  0%, 100% { transform: rotate(-4deg); }
+  50%      { transform: rotate(4deg); }
+}
+
+/* 말이 커져서 말풍선은 머리(레인 왼쪽 끝) 위로 올라간다 */
+.pony-cta { position: fixed; right: 196px; bottom: calc(var(--wall-h) + 176px); z-index: 40;
+  border: none; background: none; padding: 0; cursor: pointer; font-family: 'Minguk', sans-serif;
+  animation: ponyBob 3.4s ease-in-out infinite; }
+.pony-bubble { position: relative; display: block; padding: 9px 14px;
+  background: rgba(255,255,255,.9); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.7);
+  border-radius: 14px; font-size: 13px; font-weight: 800; color: #5a5148; white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(40,30,20,.22); transition: transform .12s, box-shadow .12s, background .12s; }
+.pony-cta:hover .pony-bubble { transform: translateY(-3px); background: #fff;
+  box-shadow: 0 10px 24px rgba(40,30,20,.3); }
+/* 말풍선 꼬리 — 아래 조랑말을 가리킨다 */
+.pony-tail-tip { position: absolute; left: 50%; bottom: -7px; width: 14px; height: 14px;
+  margin-left: -7px; background: inherit; border-right: 1px solid rgba(255,255,255,.7);
+  border-bottom: 1px solid rgba(255,255,255,.7); transform: rotate(45deg); }
+@keyframes ponyBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-4px); }
+}
 
 /* 모달 */
 /* ⚠ will-change 로 독립 합성 레이어를 강제한다.
@@ -273,6 +558,27 @@ html, body { height: 100%; overflow: hidden;
   font-weight: 700; cursor: pointer; padding: 8px 10px; border-radius: 10px; }
 .text-btn:hover { background: #f6ede2; }
 
+/* 제주말 안내 */
+.about-sec { margin-bottom: 18px; }
+.about-h { font-size: 14px; font-weight: 800; color: #e8720e; margin-bottom: 10px;
+  padding-left: 9px; border-left: 3px solid #ffcf9b; }
+.ex-row { display: flex; align-items: center; gap: 9px; padding: 11px 12px; border-radius: 14px;
+  background: #fff; border: 1px solid rgba(120,90,60,.14); margin-bottom: 8px; }
+.ex-from { flex: 1; font-size: 14px; color: #8a7d6c; }
+.ex-arrow { flex: none; color: #cdbfae; font-size: 13px; }
+.ex-to { flex: 1; font-size: 15px; font-weight: 800; color: #4a3f34; }
+.why { display: flex; gap: 11px; padding: 12px; border-radius: 14px; background: #fff;
+  border: 1px solid rgba(120,90,60,.14); margin-bottom: 8px; }
+.why-no { flex: none; width: 22px; height: 22px; border-radius: 50%; background: #ffe9d0;
+  color: #e8720e; font-size: 12px; font-weight: 800; display: flex; align-items: center;
+  justify-content: center; }
+.why-main { flex: 1; min-width: 0; }
+.why-title { font-size: 15px; font-weight: 800; color: #4a3f34; margin-bottom: 4px; }
+.why-body { font-size: 13px; line-height: 1.65; color: #8a7d6c; word-break: keep-all; }
+.about-note { padding: 14px 16px; border-radius: 14px; background: linear-gradient(120deg, #f6ede2, #ffeeda);
+  border: 1px solid rgba(232,114,14,.2); font-size: 13px; line-height: 1.7; font-weight: 600;
+  color: #6b5a48; word-break: keep-all; }
+
 .empty { text-align: center; color: #9b8f80; font-size: 14px; padding: 44px 10px; }
 .empty svg { width: 44px; height: 44px; color: #cdbfae; margin-bottom: 10px; }
 
@@ -291,6 +597,11 @@ html, body { height: 100%; overflow: hidden;
   .chrome-btn { padding: 9px 14px; font-size: 14px; }
   .app-rail { top: auto; bottom: 16px; right: 50%; transform: translateX(50%);
     flex-direction: row; gap: 9px; }
-  .rail-btn { width: 66px; padding: 10px 5px; }
+  .rail-btn { width: 66px; height: 66px; padding: 5px; }
   .rail-btn svg { width: 22px; height: 22px; }
+  /* 아래 가로줄로 내려온 레일과 겹치지 않게 말을 조금 더 띄운다 */
+  .pony-lane { width: 200px; height: 119px; bottom: calc(var(--wall-h) - 13px); }
+  .pony { width: 148px; height: 119px; right: 14px; }
+  .pony-cta { right: 92px; bottom: calc(var(--wall-h) + 108px); }
+  .pony-bubble { padding: 8px 12px; font-size: 12px; }
 }

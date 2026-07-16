@@ -6,10 +6,11 @@
 <title>제주 사투리 번역기 · 돌하르방과 해녀</title>
 <meta name="description" content="표준어 ↔ 제주 방언 번역기. 돌하르방이 제주말로 바꽈드립니다.">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://api.open-meteo.com" crossorigin>
 <!-- Pretendard (오픈소스, jsDelivr CDN) -->
 <link rel="stylesheet" as="style" crossorigin
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
 
@@ -66,13 +67,15 @@
   </div>
 
   <!-- 스크립트: 순서 중요 -->
-  <script src="config.js?v=6"></script>
-  <script src="dictionary.js?v=6"></script>
-  <script src="translator.js?v=6"></script>
-  <script src="sheets.js?v=6"></script>
-  <script src="scene.js?v=6"></script>
-  <script src="store.js?v=6"></script>
-  <script src="app.js?v=6"></script>
-  <script src="features.js?v=6"></script>
+  <script src="config.js?v=10"></script>
+  <script src="dictionary.js?v=10"></script>
+  <script src="translator.js?v=10"></script>
+  <script src="sheets.js?v=10"></script>
+  <script src="scene.js?v=10"></script>
+  <script src="store.js?v=10"></script>
+  <script src="app.js?v=10"></script>
+  <!-- sky.js는 app.js가 renderScene()으로 배경을 만든 뒤에 실행돼야 한다 -->
+  <script src="sky.js?v=10"></script>
+  <script src="features.js?v=10"></script>
 </body>
 </html>
