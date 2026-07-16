@@ -8,10 +8,15 @@
 
   // 방향에 맞게 [출발어, 도착어] 쌍을 만들고, 출발어 길이순(긴 것 먼저)으로 정렬.
   // 길이순 정렬 덕분에 '감귤'이 '귤'보다 먼저 매칭됩니다.
+  //
+  // 쌍의 3번째 값으로 방향을 제한할 수 있습니다(예: ["저렇게", "정", "s2j"]).
+  // '정·막·낭'처럼 짧은 제주말은 표준어 단어 속에 그대로 들어있어서
+  // (정말→'저렇게'말, 마지막→마지'너무') 반대 방향에서 오작동합니다.
   function orient(pairs, direction) {
     const src = direction === "s2j" ? 0 : 1;
     const dst = direction === "s2j" ? 1 : 0;
     return pairs
+      .filter((p) => !p[2] || p[2] === direction)
       .map((p) => [p[src], p[dst]])
       .filter((p) => p[0] && p[1])
       .sort((a, b) => b[0].length - a[0].length);

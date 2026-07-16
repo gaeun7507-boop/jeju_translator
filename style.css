@@ -8,47 +8,60 @@
   --wall-h: 18vh;
 }
 html, body { height: 100%; overflow: hidden;
-  font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; }
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -.01em; }
 
-/* ===== 배경(노을 하늘) ===== */
+/* ===== 배경(노을 하늘) =====
+   실제 제주 노을처럼 위는 짙은 남보라, 아래로 갈수록 보라 → 장미 → 코랄 → 금빛.
+   해 주변엔 따로 방사형 글로우를 얹어 빛이 번지는 느낌을 만든다. */
 .scene { position: fixed; inset: 0; z-index: 0; overflow: hidden;
-  background: linear-gradient(180deg, var(--sky-top) 0%, #8a7fb0 22%, var(--sky-mid) 52%,
-    var(--sky-low) 74%, var(--sky-bottom) 100%); }
+  background:
+    radial-gradient(72% 52% at 83% 38%,
+      rgba(255,233,182,.55) 0%, rgba(255,188,124,.26) 34%, rgba(255,160,110,0) 66%),
+    linear-gradient(180deg,
+      #2e3566 0%,
+      #43467a 12%,
+      #63588f 26%,
+      #8b6597 38%,
+      #b8748f 50%,
+      #d98a80 60%,
+      #ee9f6f 70%,
+      #f9b978 80%,
+      #ffd79a 90%,
+      #ffe9b8 100%); }
 
-.sun { position: absolute; left: 50%; top: 30%; width: 120px; height: 120px;
+/* 해 — 오른쪽, 한라산에 살짝 걸치도록 (돌하르방과 겹치지 않게) */
+.sun { position: absolute; left: 83%; top:38%; width: 120px; height: 120px;
   transform: translate(-50%, -50%); border-radius: 50%;
-  background: radial-gradient(circle, #fff7e0 0%, #ffd27a 46%, #ff9d4d 76%, rgba(255,157,77,0) 100%);
-  box-shadow: 0 0 60px 24px rgba(255,190,110,.4); }
+  background: radial-gradient(circle, #fffdf2 0%, #fff0c4 32%, #ffce7e 58%,
+    #ffab5e 78%, rgba(255,160,90,0) 100%);
+  box-shadow: 0 0 90px 36px rgba(255,196,128,.38); }
 
-/* 구름 */
-.cloud { position: absolute; background: rgba(255,255,255,.85); border-radius: 50px;
-  filter: blur(1px); opacity: .9; animation: drift linear infinite; }
-.cloud::before, .cloud::after { content: ""; position: absolute; background: inherit; border-radius: 50%; }
-.cloud.c1 { width: 120px; height: 34px; top: 12%; left: -160px; animation-duration: 70s; }
-.cloud.c1::before { width: 55px; height: 55px; top: -24px; left: 20px; }
-.cloud.c1::after { width: 40px; height: 40px; top: -16px; left: 62px; }
-.cloud.c2 { width: 90px; height: 26px; top: 20%; left: -140px; animation-duration: 95s; animation-delay: -30s; opacity: .75; }
-.cloud.c2::before { width: 42px; height: 42px; top: -18px; left: 16px; }
-.cloud.c2::after { width: 30px; height: 30px; top: -12px; left: 48px; }
-.cloud.c3 { width: 150px; height: 38px; top: 7%; left: -200px; animation-duration: 120s; animation-delay: -60s; opacity: .7; }
-.cloud.c3::before { width: 60px; height: 60px; top: -28px; left: 24px; }
-.cloud.c3::after { width: 46px; height: 46px; top: -18px; left: 74px; }
-@keyframes drift { from { transform: translateX(0); } to { transform: translateX(calc(100vw + 260px)); } }
+/* 구름 — scene.js가 몽글몽글한 SVG를 넣어준다 */
+.cloud { position: absolute; animation: drift linear infinite; }
+.cloud svg { width: 100%; height: auto; display: block; }
+.cloud.c1 { width: 190px; top: 11%; left: -250px; animation-duration: 78s; opacity: .95; }
+.cloud.c2 { width: 140px; top: 19%; left: -210px; animation-duration: 104s; animation-delay: -34s; opacity: .82; }
+.cloud.c3 { width: 240px; top: 6%;  left: -310px; animation-duration: 132s; animation-delay: -66s; opacity: .72; }
+.cloud.c4 { width: 165px; top: 27%; left: -230px; animation-duration: 118s; animation-delay: -88s; opacity: .6; }
+@keyframes drift { from { transform: translateX(0); } to { transform: translateX(calc(100vw + 340px)); } }
 
-/* 한라산 — 상단에서도 봉우리가 보이도록 위로 올림 */
-.hallasan { position: absolute; bottom: calc(var(--wall-h) - 2vh); left: 50%;
-  transform: translateX(-50%); width: 140%; height: 46%; }
+/* 한라산 — 봉우리를 오른쪽으로 옮김(왼쪽 UI·해와 겹치지 않게) */
+.hallasan { position: absolute; bottom: calc(var(--wall-h) - 2vh); left: 70%;
+  transform: translateX(-50%); width: 140%; height: 36%; }
 .hallasan svg { width: 100%; height: 100%; display: block; }
 
-/* 감귤나무 */
+/* 감귤나무 — 두 그루를 모두 왼쪽으로 모아 붙임 */
 .tree { position: absolute; bottom: calc(var(--wall-h) - 3vh); z-index: 3; }
-.tree.left { left: 3%; width: 120px; }
-.tree.right { right: 4%; width: 150px; }
+.tree.left { left: 1%; width: 150px; }
+.tree.right { left: 9%; width: 120px; }
 .tree svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 6px 8px rgba(0,0,0,.25)); }
 
 /* 현무암 돌담 */
 .wall { position: absolute; bottom: 0; left: 0; width: 100%; height: var(--wall-h);
-  z-index: 2; }
+  z-index: -1; }
 .wall svg { width: 100%; height: 100%; display: block; }
 
 /* ===== 공통 레이아웃 ===== */
@@ -57,10 +70,24 @@ html, body { height: 100%; overflow: hidden;
 .view { width: 100%; height: 100%; }
 .hidden { display: none !important; }
 
-/* ===== 랜딩 화면 ===== */
+/* ===== 랜딩 화면 =====
+   하르방 / 말풍선 / 시작 버튼 세 가지 UI를 왼쪽에 세로로 배치
+   → 오른쪽의 해와 겹치지 않도록 */
 .view-landing { display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 18px; padding: 24px; }
-.hero-dol { width: 150px; height: 150px; cursor: pointer;
+/* 화면 중앙에 배치 · 번역 대화창(.card)처럼 반투명 프레임(카드) 안에 담음 · 프레임 크게 */
+.landing-group { display: flex; flex-direction: column; align-items: center; gap: 30px;
+  transform: translateY(-1.5vh);
+  padding: 60px 70px;
+  background: rgba(255,255,255,.32);
+  backdrop-filter: blur(9px);
+  border-radius: 32px;
+  border: 1px solid rgba(255,255,255,.55);
+  box-shadow: 0 18px 50px rgba(40,30,20,.35); }
+/* 돌하르방(왼쪽) + 말풍선(오른쪽)을 나란히 */
+.landing-top { display: flex; align-items: center; gap: 20px; }
+.start-sub { text-align: center; }
+.hero-dol { flex: none; width: 156px; height: 156px; cursor: pointer;
   filter: drop-shadow(0 12px 18px rgba(0,0,0,.3));
   border-radius: 50%; overflow: hidden; transition: transform .18s;
   animation: bob 3.2s ease-in-out infinite; }
@@ -70,25 +97,26 @@ html, body { height: 100%; overflow: hidden;
 @keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
 .speech-bubble { position: relative; background: rgba(90,81,72,.94); color: #fff8ef;
-  padding: 16px 22px; border-radius: 20px; font-size: 20px; font-weight: 700; line-height: 1.45;
-  text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,.28); max-width: 88%; }
-.speech-tail { position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
-  border: 8px solid transparent; border-bottom-color: rgba(90,81,72,.94); }
+  padding: 20px 28px; border-radius: 22px; font-size: 24px; font-weight: 700; line-height: 1.45;
+  text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,.28); max-width: 320px; }
+/* 말풍선이 돌하르방 오른쪽에 있으므로 꼬리는 왼쪽을 향함 */
+.speech-tail { position: absolute; top: 50%; left: -14px; transform: translateY(-50%);
+  border: 8px solid transparent; border-right-color: rgba(90,81,72,.94); }
 
 .start-btn { margin-top: 4px; border: none; cursor: pointer; font-family: inherit;
-  font-size: 17px; font-weight: 700; color: #fff; padding: 15px 30px; border-radius: 40px;
+  font-size: 21px; font-weight: 700; color: #fff; padding: 18px 42px; border-radius: 44px;
   background: linear-gradient(135deg, #ff9f1c, #e8720e);
   box-shadow: 0 8px 20px rgba(200,90,10,.4); transition: transform .12s, box-shadow .12s; }
 .start-btn b { font-weight: 900; }
 .start-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(200,90,10,.5); }
 .start-btn:active { transform: translateY(0); }
-.start-sub { color: #fff; font-size: 13px; opacity: .85; text-shadow: 0 1px 3px rgba(0,0,0,.3); }
+.start-sub { color: #fff; font-size: 15px; opacity: .85; text-shadow: 0 1px 3px rgba(0,0,0,.3); }
 
 /* ===== 채팅 화면 ===== */
-/* 상단에 한라산이 보이도록 카드를 아래로 내림 */
-.view-chat { display: flex; align-items: flex-end; justify-content: center;
-  padding: 0 14px 14px; }
-.card { width: 100%; max-width: 540px; height: 84vh; display: flex; flex-direction: column;
+/* 번역 대화창 카드를 화면 세로 중앙에 배치 */
+.view-chat { display: flex; align-items: center; justify-content: center;
+  padding: 14px; }
+.card { width: 100%; max-width: 540px; height: 100vh; display: flex; flex-direction: column;
   background: rgba(255,255,255,.85); backdrop-filter: blur(10px);
   border-radius: 26px; box-shadow: 0 18px 50px rgba(40,30,20,.4); overflow: hidden;
   border: 1px solid rgba(255,255,255,.6); }
@@ -155,10 +183,114 @@ html, body { height: 100%; overflow: hidden;
   :root { --wall-h: 15vh; }
   .view-chat { padding: 0; align-items: stretch; }
   .card { border-radius: 0; max-width: 100%; height: 100%; }
-  .tree.left { width: 84px; } .tree.right { width: 104px; }
+  .tree.left { width: 104px; } .tree.right { width: 84px; }
   .hero-dol { width: 120px; height: 120px; }
   .speech-bubble { font-size: 18px; }
+  /* 좁은 화면: 살짝 왼쪽 정렬, 말풍선은 아담하게, 해는 위쪽 오른편으로 */
+  .view-landing { padding: 24px 16px 24px 5%; align-items: flex-start; }
+  .landing-top { gap: 10px; }
+  .speech-bubble { font-size: 16px; max-width: 190px; padding: 12px 16px; }
+  .sun { left: 80%; top: 24%; width: 92px; height: 92px; }
 }
 @media (min-height: 720px) and (min-width: 481px) {
   .card { height: 78vh; }
+}
+
+/* ==========================================================================
+   부가 기능 — 왼쪽 위 사전 / 오른쪽 레일 / 모달
+   ========================================================================== */
+/* 대화창이 열리면 크롬 숨김 */
+.chat-open .app-chrome, .chat-open .app-rail { display: none; }
+
+.app-chrome { position: fixed; top: 20px; left: 20px; z-index: 40; }
+.chrome-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px;
+  background: rgba(255,255,255,.85); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.7);
+  border-radius: 999px; cursor: pointer; font-family: inherit; font-size: 15px; font-weight: 800; color: #5a5148;
+  box-shadow: 0 6px 18px rgba(40,30,20,.22); transition: transform .12s, box-shadow .12s; }
+.chrome-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(40,30,20,.3); }
+.chrome-btn svg { width: 20px; height: 20px; color: #e8720e; }
+
+.app-rail { position: fixed; top: 50%; right: 20px; transform: translateY(-50%); z-index: 40;
+  display: flex; flex-direction: column; gap: 12px; }
+.rail-btn { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 74px; padding: 13px 6px;
+  background: rgba(255,255,255,.85); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.7);
+  border-radius: 18px; cursor: pointer; font-family: inherit; font-size: 11.5px; font-weight: 700; line-height: 1.25;
+  color: #5a5148; text-align: center; box-shadow: 0 6px 18px rgba(40,30,20,.22);
+  transition: transform .12s, box-shadow .12s, background .12s; }
+.rail-btn:hover { transform: translateX(-3px); background: #fff; box-shadow: 0 10px 24px rgba(40,30,20,.3); }
+.rail-btn svg { width: 25px; height: 25px; color: #e8720e; }
+
+/* 모달 */
+/* ⚠ will-change 로 독립 합성 레이어를 강제한다.
+   .landing-group 의 backdrop-filter 가 크롬 합성 버그로 z-index 를 무시하고
+   모달 위에 그려지는 문제가 있어서(클릭은 되는데 화면엔 프레임이 덮임) 필요함. */
+.modal-overlay { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center;
+  padding: 20px; background: rgba(30,22,14,.5); backdrop-filter: blur(3px); animation: fade .18s ease;
+  will-change: transform; }
+.modal-overlay.hidden { display: none; }
+.modal { width: 100%; max-width: 460px; max-height: 82vh; display: flex; flex-direction: column;
+  background: #fdfaf5; border-radius: 22px; overflow: hidden;
+  box-shadow: 0 24px 60px rgba(20,12,6,.45); animation: pop .2s ease; }
+.modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px;
+  background: linear-gradient(120deg, #4a6b8a, #7a5c46); color: #fff; }
+.modal-title { display: flex; align-items: center; gap: 9px; font-size: 18px; font-weight: 800; }
+.modal-title svg { width: 22px; height: 22px; }
+.modal-close { width: 34px; height: 34px; flex: none; border: none; border-radius: 50%; cursor: pointer;
+  background: rgba(255,255,255,.2); color: #fff; display: flex; align-items: center; justify-content: center; }
+.modal-close:hover { background: rgba(255,255,255,.34); }
+.modal-close svg { width: 20px; height: 20px; }
+.modal-body { flex: 1; overflow-y: auto; padding: 16px 18px 18px; }
+.modal-body::-webkit-scrollbar { width: 7px; }
+.modal-body::-webkit-scrollbar-thumb { background: rgba(120,90,60,.3); border-radius: 10px; }
+
+/* 검색창 */
+.dict-search { position: relative; margin-bottom: 10px; }
+.dict-search svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+  width: 18px; height: 18px; color: #9b8f80; }
+.dict-search input { width: 100%; padding: 12px 14px 12px 40px; border: 1px solid rgba(120,90,60,.3);
+  border-radius: 14px; font-family: inherit; font-size: 15px; outline: none; background: #fff; }
+.dict-search input:focus { border-color: #7a5c46; }
+.dict-count { font-size: 12px; color: #9b8f80; margin: 0 4px 10px; }
+
+/* 리스트 아이템 */
+.li { display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 14px; background: #fff;
+  border: 1px solid rgba(120,90,60,.14); margin-bottom: 9px; }
+.li-main { flex: 1; min-width: 0; }
+.li-primary { font-size: 16px; font-weight: 800; color: #4a3f34; word-break: break-word; }
+.li-sub { font-size: 13px; color: #8a7d6c; margin-top: 3px; word-break: break-word; }
+.li-badge { display: inline-block; font-size: 10.5px; font-weight: 700; color: #e8720e; background: #ffe9d0;
+  padding: 2px 7px; border-radius: 8px; margin-bottom: 5px; }
+.li-time { font-size: 11px; color: #b0a595; margin-top: 4px; }
+.li-acts { display: flex; gap: 2px; flex: none; }
+.icon-btn { width: 34px; height: 34px; border: none; border-radius: 10px; cursor: pointer; background: transparent;
+  color: #9b8f80; display: flex; align-items: center; justify-content: center; transition: background .12s, color .12s; }
+.icon-btn:hover { background: #f0e8dc; color: #5a5148; }
+.icon-btn svg { width: 19px; height: 19px; }
+.icon-btn.fav-on { color: #f5a623; }
+
+.modal-foot { display: flex; justify-content: flex-end; padding-top: 4px; }
+.text-btn { border: none; background: transparent; color: #b06a3a; font-family: inherit; font-size: 13px;
+  font-weight: 700; cursor: pointer; padding: 8px 10px; border-radius: 10px; }
+.text-btn:hover { background: #f6ede2; }
+
+.empty { text-align: center; color: #9b8f80; font-size: 14px; padding: 44px 10px; }
+.empty svg { width: 44px; height: 44px; color: #cdbfae; margin-bottom: 10px; }
+
+/* 토스트 */
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(20px); z-index: 200;
+  background: rgba(40,30,20,.92); color: #fff; padding: 11px 20px; border-radius: 999px; font-size: 14px;
+  font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: none; } }
+
+/* 부가 기능 반응형 — 좁은 화면에선 오른쪽 레일을 아래 가로줄로 */
+@media (max-width: 640px) {
+  .app-chrome { top: 14px; left: 14px; }
+  .chrome-btn { padding: 9px 14px; font-size: 14px; }
+  .app-rail { top: auto; bottom: 16px; right: 50%; transform: translateX(50%);
+    flex-direction: row; gap: 9px; }
+  .rail-btn { width: 66px; padding: 10px 5px; }
+  .rail-btn svg { width: 22px; height: 22px; }
 }

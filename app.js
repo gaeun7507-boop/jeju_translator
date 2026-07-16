@@ -6,6 +6,7 @@
   const { DOL, HAENYEO, renderScene } = window.JejuScene;
   const T = window.JejuTranslator;
   const Sheets = window.JejuSheets;
+  const Store = window.JejuStore;
 
   let mode = "s2j"; // 's2j' 표준어→제주말 · 'j2s' 제주말→표준어
   let greeted = false;
@@ -40,8 +41,8 @@
 
   /* ---------- 초기화 ---------- */
   renderScene();
-  heroDol.innerHTML = DOL;
-  headAvatar.innerHTML = DOL;
+  heroDol.innerHTML = DOL();
+  headAvatar.innerHTML = DOL();
 
   // 구글 시트 단어장 불러오기 (있으면)
   Sheets.loadDictionary().then((res) => {
@@ -52,6 +53,7 @@
   function goChat() {
     viewLanding.classList.add("hidden");
     viewChat.classList.remove("hidden");
+    document.body.classList.add("chat-open"); // 부가 기능 크롬 숨김
     if (!greeted) {
       greeted = true;
       addBot("안녕하수꽈, 무신 거 궁금하우꽈?");
@@ -62,6 +64,7 @@
   function goLanding() {
     viewChat.classList.add("hidden");
     viewLanding.classList.remove("hidden");
+    document.body.classList.remove("chat-open");
   }
 
   startBtn.addEventListener("click", goChat);
@@ -72,15 +75,19 @@
   backBtn.addEventListener("click", goLanding);
 
   /* ---------- 모드 토글 ---------- */
-  modeToggle.addEventListener("click", (e) => {
-    const btn = e.target.closest(".mode-btn");
-    if (!btn || btn.dataset.mode === mode) return;
-    mode = btn.dataset.mode;
+  function setMode(m) {
+    if (m === mode) return;
+    mode = m;
     modeToggle.querySelectorAll(".mode-btn").forEach((b) =>
       b.classList.toggle("active", b.dataset.mode === mode)
     );
     modeLabel.textContent = MODE_TEXT[mode].label;
     input.placeholder = MODE_TEXT[mode].placeholder;
+  }
+  modeToggle.addEventListener("click", (e) => {
+    const btn = e.target.closest(".mode-btn");
+    if (!btn || btn.dataset.mode === mode) return;
+    setMode(btn.dataset.mode);
     addBot("모드 바꽈수다 — " + MODE_TEXT[mode].intro);
   });
 
@@ -95,7 +102,7 @@
   function addBot(text, orig) {
     const row = document.createElement("div");
     row.className = "row bot";
-    row.innerHTML = `<div class="avatar">${DOL}</div>
+    row.innerHTML = `<div class="avatar">${DOL()}</div>
       <div class="bubble"><span class="label">돌하르방</span>${escapeHtml(text)}${
       orig ? `<span class="orig">${MODE_TEXT[mode].origLabel}: ${escapeHtml(orig)}</span>` : ""
     }</div>`;
@@ -113,7 +120,7 @@
   function addTyping() {
     const row = document.createElement("div");
     row.className = "row bot";
-    row.innerHTML = `<div class="avatar">${DOL}</div>
+    row.innerHTML = `<div class="avatar">${DOL()}</div>
       <div class="bubble typing"><span></span><span></span><span></span></div>`;
     chatLog.appendChild(row);
     scroll();
@@ -135,15 +142,31 @@
       const out = T.translate(val, currentMode);
       addBot(out, val);
       Sheets.logTranslation({ mode: currentMode, input: val, output: out });
+      if (Store) Store.addHistory({ mode: currentMode, input: val, output: out }); // 로컬 번역기록
     }, 500 + Math.random() * 350);
   }
 
   sendBtn.addEventListener("click", send);
   input.addEventListener("keydown", (e) => {
+    // 한글 입력(IME) 조합 중 Enter는 무시 — 마지막 글자가 중복 전송되는 버그 방지
+    if (e.isComposing || e.keyCode === 229) return;
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
   });
   input.addEventListener("input", () => {
     input.style.height = "auto";
     input.style.height = Math.min(input.scrollHeight, 110) + "px";
   });
+
+  /* ---------- 외부(features.js)에서 쓰는 API ---------- */
+  window.JejuApp = {
+    start() { goChat(); },
+    // 표현을 번역기에서 바로 보여주기: 대화창으로 가서 자동 번역
+    translateText(text, m) {
+      goChat();
+      if (m) setMode(m);
+      input.value = text;
+      input.dispatchEvent(new Event("input"));
+      setTimeout(send, 650); // 인사말 뒤에 자연스럽게 이어지도록
+    },
+  };
 })();
