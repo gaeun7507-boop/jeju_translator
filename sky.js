@@ -24,6 +24,23 @@
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /* ---------- 지난번 날씨 기억 ----------
+     API 응답은 1초쯤 걸린다. 그때까지 무조건 '맑음'으로 칠해두면 흐린 날엔
+     응답이 오는 순간 회색 베일이 덮이는데, 하필 사용자가 첫 화면을 읽고
+     번역기로 들어가는 때라 "들어가니까 화면이 탁해진다"로 읽힌다.
+     지난번에 본 날씨로 시작하면 두 번째 방문부터는 바뀌는 장면이 아예 없다.
+     빗나가더라도 손해는 없다 — 베일이 1초에 걸쳐 부드럽게 바뀔 뿐이다. */
+  const WK = "jeju_sky_weather_v1";
+  function lastWeather() {
+    try {
+      const v = localStorage.getItem(WK);
+      return WEATHERS.includes(v) ? v : null;
+    } catch (e) { return null; }        // 시크릿 창 등에서 접근이 막힐 수 있다
+  }
+  function remember(w) {
+    try { localStorage.setItem(WK, w); } catch (e) { /* 용량 초과 등 무시 */ }
+  }
+
   let current = { time: null, weather: null };
   let manual = false;   // 수동 지정이면 자동 갱신이 덮어쓰지 않는다
   let timer = null;
@@ -197,6 +214,7 @@
       const time = bandFromSun(now.getTime(), sunrise, sunset);
       const weather = weatherFromCode(j.current.weather_code);
       apply(time, weather);
+      remember(weather);   // 다음 방문의 첫 화면에 쓴다
       console.info(`[sky] ${time} · ${weather} (일출 ${j.daily.sunrise[0].slice(11)} · 일몰 ${j.daily.sunset[0].slice(11)})`);
     } catch (e) {
       // 날씨는 알 수 없으니 맑음으로 두고, 시간대만 로컬 시계로 맞춘다
@@ -221,8 +239,9 @@
   }
 
   /* ---------- 시작 ---------- */
-  // 첫 화면이 흰 하늘로 깜빡이지 않도록, API를 기다리기 전에 시계로 먼저 칠한다
-  apply(bandFromClock(new Date()), "clear");
+  // 첫 화면이 흰 하늘로 깜빡이지 않도록, API를 기다리기 전에 시계로 먼저 칠한다.
+  // 날씨는 지난번에 본 것으로 — 모르면(첫 방문) 맑음.
+  apply(bandFromClock(new Date()), lastWeather() || "clear");
 
   const q = new URLSearchParams(location.search);
   const qt = q.get("time"), qw = q.get("weather");

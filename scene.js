@@ -514,6 +514,11 @@
       <div class="cloud c2">${cloud()}</div>
       <div class="cloud c3">${cloud()}</div>
       <div class="cloud c4">${cloud()}</div>
+      <!-- 흐린 날에만 보이는 구름 — 맑을 땐 CSS가 opacity 0 으로 숨긴다 -->
+      <div class="cloud c5 extra">${cloud()}</div>
+      <div class="cloud c6 extra">${cloud()}</div>
+      <div class="cloud c7 extra">${cloud()}</div>
+      <div class="cloud c8 extra">${cloud()}</div>
 
       <div class="hallasan">${hallasan()}</div>
 
@@ -526,6 +531,29 @@
     `;
   }
 
+  /* ---------- '나' 프로필 (감귤) ----------
+     대화창에서 묻는 쪽은 사용자 자신이다. 제주 하면 감귤이니 감귤을 얼굴로 쓴다.
+     배경의 감귤나무와 달리 --fruit-* 테마 변수를 쓰지 않고 색을 박아둔다 —
+     프로필 사진이 밤이 됐다고 같이 어두워지면 곤란하다. */
+  const ME = `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#fdf0d8"/>
+    <circle cx="51" cy="56" r="33" fill="#b8600f"/>
+    <circle cx="50" cy="54" r="30" fill="#e8912f"/>
+    <path d="M36,36 q22,-6 30,12 q-18,-8 -30,-12 z" fill="#ffcf72" opacity=".9"/>
+    <!-- 꼭지와 잎 -->
+    <rect x="47" y="18" width="6" height="10" rx="3" fill="#4a3018"/>
+    <path d="M53,22 C64,14 78,16 82,22 C74,32 60,32 53,24 Z" fill="#4f7c42"/>
+    <path d="M55,23 C64,19 74,20 79,23" stroke="#93b757" stroke-width="2"
+      fill="none" stroke-linecap="round"/>
+    <!-- 눈·볼·입 -->
+    <circle cx="40" cy="56" r="3.4" fill="#3d2410"/>
+    <circle cx="61" cy="56" r="3.4" fill="#3d2410"/>
+    <circle cx="33" cy="64" r="4" fill="#f2795a" opacity=".45"/>
+    <circle cx="68" cy="64" r="4" fill="#f2795a" opacity=".45"/>
+    <path d="M44,66 Q50,71 57,66" stroke="#7a3f12" stroke-width="2.4"
+      fill="none" stroke-linecap="round"/>
+  </svg>`;
+
   // DOL은 호출할 때마다 고유 id를 가진 새 SVG를 반환하는 함수
-  window.JejuScene = { renderScene, DOL: makeDol, HAENYEO };
+  window.JejuScene = { renderScene, DOL: makeDol, HAENYEO, ME };
 })();

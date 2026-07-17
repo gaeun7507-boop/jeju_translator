@@ -109,42 +109,30 @@
   function pony() {
     const r = rng(19);
 
-    /* ---- 뼈대 ----
-       지면 y=176, 기갑(어깨 마루) y=40 — 키 136.
-       다 자란 말은 '다리 길이 ≥ 몸통 깊이'다. 여기선 깊이 66(40→106) 에 다리 70(106→176).
-       예전엔 이게 뒤집혀(깊이 68 / 다리 58) 있었다 — 그래서 아무리 칠해도
-       조랑말·장난감으로 읽혔다. 색이 아니라 골격의 문제였다.
-       몸 길이 126(87→213) ≈ 키 136 — 정사각형에서 다리 쪽으로 살짝 기운 비율. */
-    const BODY = `M98,44
-      C126,36 160,34 184,41
-      C204,47 216,58 216,78
-      C216,96 206,106 190,109
-      C164,116 128,114 106,104
-      C94,99 87,90 87,76
-      C87,60 90,50 98,44 Z`;
-
-    /* 목 — 용맹함의 절반은 여기서 나온다.
-       능선(crest)을 활처럼 위로 부풀리고 목구멍(throat)은 깊게 파낸다.
-       뿌리 45 → 목덜미 22 로 좁아지는 쐐기. 머리를 치켜든 자세라
-       목이 수직에 가깝게 솟는다 — 이게 '고개 숙인 짐말'과 갈리는 지점이다. */
-    const NECK = `M58,4
-      C82,4 100,20 106,46
-      L98,90
-      C86,74 68,54 44,40
-      C40,32 40,26 42,20
-      C46,12 52,6 58,4 Z`;
-
-    /* 머리 — 예전 실패의 핵심은 볼 깊이가 머리 길이에 육박한 것(비율 1.2).
-       그건 말 대가리가 아니라 벽돌이다. 여기선 길이 61 : 볼 깊이 38 ≈ 1.6.
-       광대에서 주둥이로 갈수록 확실히 좁아지되 코끝은 뭉툭하게 끊는다 —
-       끝까지 가늘어지면 개미핥기가 되고, 안 좁아지면 도로 벽돌이 된다. */
-    const HEAD = `M58,4
-      C48,4 40,8 32,16
-      C24,24 14,34 8,42
-      C4,47 6,52 12,54
-      C18,56 26,55 32,52
-      C42,48 50,42 55,32
-      C59,22 60,10 58,4 Z`;
+    /* 실루엣 — 바닥은 y=174.
+       튼실해 보이려면 몸통 깊이(등 y≈48 → 배 y≈116, 약 68)와
+       다리 길이(배 → 바닥, 약 58)가 엇비슷해야 한다.
+       다리가 길면 경주마, 몸통이 얕으면 말라 보인다. */
+    const BODY = `M106,56 C136,44 168,42 192,50
+      C207,56 214,68 212,86 C210,105 202,115 190,118
+      C167,124 130,124 110,114 C97,108 91,97 91,84
+      C91,68 96,60 106,56 Z`;
+    /* 목 — 흔들 때 머리와 통째로 도니까 한 덩어리로 묶는다(왼쪽을 본다).
+       힘은 능선(crest)에서 나온다 — 목덜미에서 기갑까지 위로 볼록하게 부풀리고,
+       목 아래(throat)는 오목하게 판다. 그래야 목이 굵고 단단해 보인다.
+       길이는 머리의 1.2배를 넘기지 않는다 — 넘으면 라마가 된다. */
+    const NECK = `M62,16 C80,14 99,32 110,54
+      C116,72 114,92 106,104 C86,92 64,72 46,56
+      C48,42 54,26 62,16 Z`;
+    /* 머리 — 두개골은 짧고 두껍게, 볼(하악각)은 깊게, 주둥이는 뭉툭하게 끊는다.
+       코끝으로 갈수록 가늘어지기만 하는 쐐기를 그리면 개미핥기가 된다.
+       핵심은 볼 깊이(x≈62 에서 y 20→68, 약 48)가 머리 길이(≈59)에 육박하는 것 —
+       이 '거의 정사각형에 가까운 덩어리'가 사나운 인상의 뼈대다.
+       콧등은 곧게 내려오다 주둥이 앞에서 뭉툭하게 둥글려 끊는다. */
+    const HEAD = `M62,14 C50,12 42,17 34,26
+      C27,34 20,42 16,50 C13,57 14,63 20,67
+      C26,71 34,72 42,71 C54,70 64,62 69,48
+      C72,38 72,24 68,18 C66,14 64,13 62,14 Z`;
 
     /* 결 방향(ang°)대로 붓자국 한 무더기 — 사각 구간 안에 흩뿌린다 */
     function daub(n, x0, y0, x1, y1, ang, col, opLo, opHi, wLo, wHi, lenLo, lenHi) {
@@ -166,108 +154,58 @@
       return s;
     }
 
-    /* 갈기·꼬리 한 다발 — (x,y)에 뿌리를 두고 ang° 방향으로 흘러 끝이 뾰족해진다.
-       flick 은 끝이 옆으로 튕기는 정도(법선 방향).
-
-       예전엔 이걸 가는 털 240가닥을 불투명하게 겹쳐 그렸다. 가닥을 아무리 늘려도
-       사이에 틈이 없으면 그냥 색면이다 — 그래서 목에 눌러 붙은 떡이 됐다.
-       털은 '가닥'이 아니라 '다발'로 읽힌다. 다발 예닐곱을 길이·각도·두께를 달리해
-       띄엄띄엄 심고, 그 틈으로 목이 비쳐야 비로소 털로 보인다. */
-    function lock(x, y, ang, len, w, flick, col, op) {
-      const a = (ang * Math.PI) / 180;
-      const dx = Math.cos(a), dy = Math.sin(a);   // 흐르는 방향
-      const px = -dy, py = dx;                    // 법선 — 뿌리 폭이 눕는 방향
-      const f = (n) => n.toFixed(1);
-      const rx = x + px * w * 0.5, ry = y + py * w * 0.5;
-      const sx = x - px * w * 0.5, sy = y - py * w * 0.5;
-      const tx = x + dx * len + px * flick, ty = y + dy * len + py * flick;
-      // 앞모서리는 배부르게, 뒷모서리는 홀쭉하게 — 한쪽만 휘어야 흐름이 생긴다
-      return `<path d="M${f(rx)},${f(ry)}
-          C${f(rx + dx * len * 0.4 + px * w * 0.3)},${f(ry + dy * len * 0.4 + py * w * 0.3)}
-           ${f(tx - dx * len * 0.25 + px * w * 0.2)},${f(ty - dy * len * 0.25 + py * w * 0.2)}
-           ${f(tx)},${f(ty)}
-          C${f(sx + dx * len * 0.65 - px * w * 0.06)},${f(sy + dy * len * 0.65 - py * w * 0.06)}
-           ${f(sx + dx * len * 0.32)},${f(sy + dy * len * 0.32)}
-           ${f(sx)},${f(sy)} Z"
-          fill="${col}" opacity="${op}"/>`;
-    }
-
-    /* 다발 위에 얹는 잔털 — 결을 드러내는 정도로만. 많이 얹으면 도로 떡이 된다 */
-    function strand(n, x0, y0, x1, y1, ang, lenLo, lenHi, wLo, wHi) {
+    /* 갈기·꼬리 — 한 획으로 그으면 고무호스가 된다. 길이·각도가 다른 털뭉치를 겹친다 */
+    function hair(n, x0, y0, x1, y1, ang, lenLo, lenHi, wLo, wHi) {
       let s = "";
       for (let i = 0; i < n; i++) {
         const t = i / (n - 1);
-        const x = x0 + (x1 - x0) * t + (r() - 0.5) * 7;
-        const y = y0 + (y1 - y0) * t + (r() - 0.5) * 7;
-        const a = (ang * Math.PI) / 180 + (r() - 0.5) * 0.5;
+        const x = x0 + (x1 - x0) * t + (r() - 0.5) * 4;
+        const y = y0 + (y1 - y0) * t + (r() - 0.5) * 4;
+        const a = (ang * Math.PI) / 180 + (r() - 0.5) * 0.7;
         const len = lenLo + r() * (lenHi - lenLo);
+        // 검정 한 가지로만 그으면 애벌레가 된다 — 짙은 털·본색·윤기를 섞는다.
+        // 다만 밝은 털을 많이 섞으면 지푸라기 단이 된다. 대부분 짙게 깔고
+        // 윤기(--pony-mane-lit)는 드물게 얹어 결을 드러내는 정도로만 쓴다.
         const c = r();
-        const col = c > 0.7 ? "var(--pony-mane-lit)" : "var(--pony-mane)";
+        const col = c > 0.84 ? "var(--pony-mane-lit)" : c > 0.5 ? "var(--pony-mane)" : "var(--pony-mane-dk)";
+        // 반투명하면 숱이 없어 보인다 — 대체로 불투명하게 겹쳐 덩어리를 만든다
         s += `<path d="M${x.toFixed(1)},${y.toFixed(1)}
           q${(Math.cos(a) * len * 0.4 - 3).toFixed(1)},${(Math.sin(a) * len * 0.5).toFixed(1)}
           ${(Math.cos(a) * len).toFixed(1)},${(Math.sin(a) * len).toFixed(1)}"
           stroke="${col}" stroke-width="${(wLo + r() * (wHi - wLo)).toFixed(1)}"
-          stroke-linecap="round" fill="none" opacity="${(0.3 + r() * 0.4).toFixed(2)}"/>`;
+          stroke-linecap="round" fill="none" opacity="${(0.5 + r() * 0.45).toFixed(2)}"/>`;
       }
       return s;
     }
 
-    /* 갈기 다발 — 능선(58,4)→(106,46) 위에 심는다. [x, y, 각도, 길이, 뿌리폭, 튕김]
-       목덜미는 짧고 목 가운데가 가장 길다(실제 털이 자라는 순서다).
-       뿌리 간격 8~9 에 뿌리폭 10~13 — 능선에선 맞붙어 한 덩어리로 시작했다가
-       아래로 내려가며 부챗살처럼 갈라진다. 그 틈이 이 그림의 핵심이다. */
-    const MANE = [
-      [63, 4, 108, 18, 11, -3],
-      [72, 6, 116, 29, 12, 4],
-      [81, 11, 124, 41, 13, -5],
-      [90, 18, 130, 44, 13, 5],
-      [98, 28, 136, 33, 12, -4],
-      [104, 39, 142, 21, 10, 3],
-    ];
-    /* 꼬리 다발 — 꼬리대(207,48)에서 뒤로 들렸다가 무겁게 떨어진다.
-       꼬리를 들고 다니는 건 말이 기분 좋고 당당할 때다 — 축 늘어뜨리면 지친 말이 된다. */
-    const TAIL = [
-      [210, 52, 74, 52, 14, 6],
-      [216, 60, 80, 66, 15, -5],
-      [219, 70, 86, 74, 14, 7],
-      [220, 82, 92, 68, 13, -6],
-      [218, 94, 97, 52, 11, 5],
-    ];
-    // 다발마다 색을 바꿔 켜켜이 쌓인 두께를 만든다(전부 같은 색이면 실루엣 한 장)
-    const MANE_COL = ["var(--pony-mane-dk)", "var(--pony-mane)", "var(--pony-mane-dk)",
-      "var(--pony-mane)", "var(--pony-mane-dk)", "var(--pony-mane)"];
-
-    /* 다리 — '앙상함'은 굵기가 아니라 마디가 없어서 생긴다.
-       예전엔 전완 20 에서 관골 9 로 뚝 떨어졌다. 살 없는 막대 둘.
-       위에서부터 근육 29 → 전완 20 → 무릎 → 관골 11 → 구절 → 계골 9.5 → 발굽 13.
-       굵은 획을 짧게 겹쳐 얹어 위쪽에 살을 붙이는 게 요령이다.
+    /* 다리 — 통짜 막대로 그으면 장난감이 된다.
+       앞다리는 전완(굵다)–무릎–관골(가늘다)–구절–발굽,
+       뒷다리는 넓적다리(가장 굵다)–비절–관골–발굽으로 마디를 나눠 굵기를 바꾼다.
        s 는 원근 축소(반대편 다리는 조금 작다). 지면은 y=176. */
     function foreleg(x, col, s) {
-      return `<path d="M${x + 1},74 C${x + 4},86 ${x + 3},96 ${x + 2},104"
-          stroke="${col}" stroke-width="${29 * s}" stroke-linecap="round" fill="none"/>
-        <path d="M${x + 1},78 C${x + 3},98 ${x + 1},112 ${x},122"
+      return `<path d="M${x},72 C${x + 4},92 ${x + 3},108 ${x + 1},124"
           stroke="${col}" stroke-width="${20 * s}" stroke-linecap="round" fill="none"/>
-        <circle cx="${x}" cy="123" r="${7 * s}" fill="${col}"/>
-        <path d="M${x},123 C${x - 2},136 ${x - 3},144 ${x - 2},151"
-          stroke="${col}" stroke-width="${11 * s}" stroke-linecap="round" fill="none"/>
-        <circle cx="${x - 2}" cy="152" r="${6 * s}" fill="${col}"/>
-        <path d="M${x - 2},152 C${x - 1},159 ${x},163 ${x + 1},166"
-          stroke="${col}" stroke-width="${9.5 * s}" stroke-linecap="round" fill="none"/>
-        <path d="M${x + 1},164 l0,11" stroke="var(--hoof)" stroke-width="${13 * s}"
+        <circle cx="${x + 1}" cy="${124}" r="${5.4 * s}" fill="${col}"/>
+        <path d="M${x + 1},124 C${x - 1},138 ${x - 2},148 ${x - 1},157"
+          stroke="${col}" stroke-width="${9 * s}" stroke-linecap="round" fill="none"/>
+        <circle cx="${x - 1}" cy="${157}" r="${5 * s}" fill="${col}"/>
+        <path d="M${x - 1},157 C${x - 1},162 ${x},165 ${x + 1},167"
+          stroke="${col}" stroke-width="${8 * s}" stroke-linecap="round" fill="none"/>
+        <path d="M${x + 1},166 l0,8" stroke="var(--hoof)" stroke-width="${11.5 * s}"
           stroke-linecap="butt" fill="none"/>`;
     }
     function hindleg(x, col, s) {
-      return `<path d="M${x - 4},56 C${x - 2},72 ${x + 2},84 ${x + 6},96"
-          stroke="${col}" stroke-width="${34 * s}" stroke-linecap="round" fill="none"/>
-        <path d="M${x + 2},80 C${x + 6},96 ${x + 9},110 ${x + 10},119"
-          stroke="${col}" stroke-width="${19 * s}" stroke-linecap="round" fill="none"/>
-        <circle cx="${x + 10}" cy="120" r="${7.5 * s}" fill="${col}"/>
-        <path d="M${x + 10},120 C${x + 6},134 ${x + 4},144 ${x + 4},151"
-          stroke="${col}" stroke-width="${11 * s}" stroke-linecap="round" fill="none"/>
-        <circle cx="${x + 4}" cy="152" r="${6 * s}" fill="${col}"/>
-        <path d="M${x + 4},152 C${x + 5},159 ${x + 6},163 ${x + 7},166"
-          stroke="${col}" stroke-width="${9.5 * s}" stroke-linecap="round" fill="none"/>
-        <path d="M${x + 7},164 l0,11" stroke="var(--hoof)" stroke-width="${13 * s}"
+      return `<path d="M${x + 4},64 C${x - 6},90 ${x - 9},106 ${x - 5},120"
+          stroke="${col}" stroke-width="${27 * s}" stroke-linecap="round" fill="none"/>
+        <circle cx="${x - 5}" cy="${119}" r="${7 * s}" fill="${col}"/>
+        <path d="M${x - 5},118 C${x + 1},130 ${x + 3},136 ${x + 3},142"
+          stroke="${col}" stroke-width="${13 * s}" stroke-linecap="round" fill="none"/>
+        <path d="M${x + 3},142 C${x + 2},152 ${x + 1},157 ${x + 1},162"
+          stroke="${col}" stroke-width="${8.5 * s}" stroke-linecap="round" fill="none"/>
+        <circle cx="${x + 1}" cy="${162}" r="${4.8 * s}" fill="${col}"/>
+        <path d="M${x + 1},162 C${x + 1},166 ${x + 2},168 ${x + 3},169"
+          stroke="${col}" stroke-width="${8 * s}" stroke-linecap="round" fill="none"/>
+        <path d="M${x + 3},166 l0,8" stroke="var(--hoof)" stroke-width="${11.5 * s}"
           stroke-linecap="butt" fill="none"/>`;
     }
 
@@ -280,21 +218,23 @@
         <clipPath id="pnHead"><path d="${HEAD}"/></clipPath>
       </defs>
 
-      <!-- 반대편 다리 — 그늘색으로 물러나 있고 원근으로 조금 작다.
-           이쪽 다리와 어긋나게 세워야 네 다리로 버티고 선 것으로 읽힌다 -->
+      <!-- 반대편 다리 — 그늘색으로 물러나 있고 원근으로 조금 작다 -->
       <g filter="url(#pnBs)" opacity=".8">
-        ${foreleg(113, "var(--pony-shade)", 0.88)}
+        ${foreleg(118, "var(--pony-shade)", 0.88)}
         ${hindleg(180, "var(--pony-shade)", 0.88)}
       </g>
 
-      <!-- 꼬리 — 꼬리대는 살(몸색), 그 아래로 털 다발이 쏟아진다 -->
+      <!-- 꼬리 — 엉덩이(≈204,62)에서 무겁게 흘러내린다 -->
       <g class="pony-tail" filter="url(#pnBs)">
-        <path d="M204,46 C214,48 220,56 221,68 C214,68 207,60 203,50 Z"
-          fill="var(--pony-shade)"/>
-        ${TAIL.map(([x, y, a, l, w, fk], i) =>
-          lock(x, y, a, l, w, fk, i % 2 ? "var(--pony-mane)" : "var(--pony-mane-dk)", 0.95)
-        ).join("")}
-        ${strand(26, 210, 62, 222, 138, 88, 12, 30, 1.1, 2.4)}
+        <!-- 꼬리대(엉덩이에 붙는 뿌리)는 굵고, 아래로 갈수록 털이 퍼진다.
+             한 다발로 그으면 땋은 머리가 된다 — 폭이 다른 다발 셋을 겹친다 -->
+        <path d="M203,58 C222,82 226,118 217,152" stroke="var(--pony-mane-dk)" stroke-width="19"
+          stroke-linecap="round" fill="none"/>
+        <path d="M204,60 C219,84 222,118 213,150" stroke="var(--pony-mane)" stroke-width="11"
+          stroke-linecap="round" fill="none" opacity=".9"/>
+        ${hair(52, 206, 62, 220, 146, 86, 14, 36, 1.4, 3.2)}
+        ${hair(44, 200, 58, 210, 154, 82, 12, 30, 1.2, 2.8)}
+        ${hair(22, 205, 72, 223, 132, 90, 10, 22, 1, 2.2)}
       </g>
 
       <!-- 몸통 -->
@@ -305,41 +245,41 @@
           <path d="${BODY}" fill="var(--pony)"/>
           <!-- 배는 그늘. 가장자리가 또렷하면 띠를 두른 것처럼 보이므로 옅게 얹고,
                결 붓질이 경계를 흩게 둔다 -->
-          <path d="M87,80 C112,102 160,112 216,96 L216,124 L85,124 Z"
+          <path d="M90,88 C120,112 168,122 212,104 L212,134 L86,134 Z"
             fill="var(--pony-shade)" opacity=".55"/>
           <!-- 등·엉덩이는 빛 — 여기 대비가 털의 윤기를 만든다 -->
-          <path d="M92,50 C128,34 176,34 214,64 L216,24 L90,24 Z"
+          <path d="M98,58 C132,44 178,46 208,70 L210,34 L96,32 Z"
             fill="var(--pony-lit)" opacity=".5"/>
         </g>
         <!-- 결 붓질 — 갈비는 비스듬히, 어깨와 엉덩이는 근육 결을 따라 방향을 달리한다 -->
         <g filter="url(#pnBs)">
-          ${daub(40, 96, 38, 190, 60, 62, "var(--pony-lit)", 0.08, 0.24, 1, 3, 4, 11)}
-          ${daub(28, 116, 34, 200, 50, 72, "var(--pony-lit)", 0.1, 0.3, 1, 2.4, 3, 8)}
-          ${daub(36, 90, 76, 190, 110, 66, "var(--pony-shade)", 0.1, 0.3, 1.5, 4, 5, 13)}
+          ${daub(40, 100, 40, 190, 64, 62, "var(--pony-lit)", 0.08, 0.24, 1, 3, 4, 11)}
+          ${daub(28, 118, 36, 196, 52, 72, "var(--pony-lit)", 0.1, 0.3, 1, 2.4, 3, 8)}
+          ${daub(36, 90, 80, 188, 114, 66, "var(--pony-shade)", 0.1, 0.3, 1.5, 4, 5, 13)}
           <!-- 어깨 근육 — 기갑에서 팔꿈치로 비스듬히 내려온다 -->
-          ${daub(22, 88, 46, 118, 102, 100, "var(--pony-shade)", 0.1, 0.28, 1.5, 3.5, 5, 13)}
-          ${daub(14, 94, 48, 116, 90, 100, "var(--pony-lit)", 0.08, 0.22, 1, 2.4, 4, 9)}
-          <!-- 엉덩이 근육 — 둥근 결을 따라 세로에 가깝게. 여기가 커야 힘이 있어 보인다 -->
-          ${daub(26, 176, 40, 212, 104, 96, "var(--pony-lit)", 0.08, 0.24, 1, 2.8, 4, 11)}
-          ${daub(18, 182, 58, 214, 110, 96, "var(--pony-shade)", 0.1, 0.28, 1.5, 3.5, 4, 11)}
+          ${daub(20, 90, 48, 118, 104, 100, "var(--pony-shade)", 0.1, 0.28, 1.5, 3.5, 5, 13)}
+          ${daub(12, 96, 50, 116, 92, 100, "var(--pony-lit)", 0.08, 0.22, 1, 2.4, 4, 9)}
+          <!-- 엉덩이 근육 — 둥근 결을 따라 세로에 가깝게 -->
+          ${daub(24, 172, 44, 206, 106, 96, "var(--pony-lit)", 0.08, 0.24, 1, 2.8, 4, 11)}
+          ${daub(16, 178, 62, 208, 112, 96, "var(--pony-shade)", 0.1, 0.28, 1.5, 3.5, 4, 11)}
           <!-- broken color — 갈색만으로는 탁하다. 황토빛을 사이에 섞는다 -->
-          ${daub(26, 100, 44, 196, 94, 64, "var(--pony-warm)", 0.07, 0.2, 1, 3, 4, 10)}
-          ${daub(14, 90, 60, 138, 102, 70, "var(--pony-mane)", 0.06, 0.16, 1.5, 3.5, 4, 9)}
+          ${daub(26, 104, 46, 194, 96, 64, "var(--pony-warm)", 0.07, 0.2, 1, 3, 4, 10)}
+          ${daub(14, 92, 64, 140, 106, 70, "var(--pony-mane)", 0.06, 0.16, 1.5, 3.5, 4, 9)}
         </g>
       </g>
 
       <!-- 이쪽 다리 -->
       <g filter="url(#pnBs)">
-        ${foreleg(100, "var(--pony)", 1)}
+        ${foreleg(104, "var(--pony)", 1)}
         ${hindleg(194, "var(--pony)", 1)}
         <!-- 다리 뒤쪽 모서리에 그늘, 앞쪽에 빛 — 원통으로 보이게 -->
-        ${daub(12, 102, 82, 108, 132, 92, "var(--pony-shade)", 0.18, 0.44, 2, 4, 6, 15)}
-        ${daub(12, 200, 78, 208, 126, 92, "var(--pony-shade)", 0.18, 0.44, 2, 4.5, 6, 16)}
-        ${daub(9, 91, 80, 96, 128, 92, "var(--pony-lit)", 0.1, 0.28, 1.5, 3, 5, 12)}
-        ${daub(9, 186, 76, 192, 122, 92, "var(--pony-lit)", 0.1, 0.28, 1.5, 3, 5, 12)}
+        ${daub(12, 104, 80, 110, 130, 92, "var(--pony-shade)", 0.18, 0.44, 2, 4, 6, 15)}
+        ${daub(12, 186, 76, 194, 124, 92, "var(--pony-shade)", 0.18, 0.44, 2, 4.5, 6, 16)}
+        ${daub(9, 95, 78, 100, 126, 92, "var(--pony-lit)", 0.1, 0.28, 1.5, 3, 5, 12)}
+        ${daub(9, 178, 74, 184, 120, 92, "var(--pony-lit)", 0.1, 0.28, 1.5, 3, 5, 12)}
       </g>
 
-      <!-- 목·머리 — 통째로 든다·튼다 (transform-origin 은 CSS) -->
+      <!-- 목·머리 — 통째로 숙였다 올렸다 돌린다 (transform-origin 은 CSS) -->
       <g class="pony-head">
         <g filter="url(#pnB)">
           <path d="${NECK}" fill="var(--pony-shade)"/>
@@ -352,107 +292,88 @@
             <!-- 목구멍(왼쪽 아래 모서리)은 그늘, 갈기 밑 능선은 빛.
                  두 다각형 모두 NECK 의 실제 모서리를 따라가야 한다 —
                  어긋나면 목 한가운데에 뜬금없는 띠가 생긴다 -->
-            <path d="M98,90 C86,74 68,54 44,40 L34,52 L102,104 Z"
+            <path d="M46,56 C64,72 86,92 106,104 L108,118 L30,58 Z"
               fill="var(--pony-shade)" opacity=".8"/>
-            <path d="M58,4 C82,4 100,20 106,46 L114,28 L60,-10 Z"
-              fill="var(--pony-lit)" opacity=".4"/>
+            <path d="M62,16 C80,14 99,32 110,54 L116,38 L64,2 Z"
+              fill="var(--pony-lit)" opacity=".38"/>
           </g>
-          <!-- 목 근육 결은 목구멍→기갑 방향(≈50°)으로 흐른다 -->
+          <!-- 목 근육 결은 목덜미→기갑 방향(≈38°)으로 흐른다 -->
           <g filter="url(#pnBs)">
-            ${daub(30, 52, 22, 104, 70, 50, "var(--pony-lit)", 0.08, 0.24, 1, 2.6, 4, 10)}
-            ${daub(22, 46, 44, 100, 94, 50, "var(--pony-shade)", 0.1, 0.3, 1.2, 3.2, 4, 11)}
-            ${daub(14, 54, 32, 100, 78, 50, "var(--pony-warm)", 0.06, 0.18, 1, 2.4, 3, 8)}
+            ${daub(30, 60, 24, 108, 66, 38, "var(--pony-lit)", 0.08, 0.24, 1, 2.6, 4, 10)}
+            ${daub(22, 52, 48, 104, 96, 38, "var(--pony-shade)", 0.1, 0.3, 1.2, 3.2, 4, 11)}
+            ${daub(14, 62, 34, 104, 76, 38, "var(--pony-warm)", 0.06, 0.18, 1, 2.4, 3, 8)}
           </g>
         </g>
 
-        <!-- 귀 — 앞으로 쫑긋 세운다.
-             뒤로 눕히면 성난 말이지 용맹한 말이 아니다. 화난 것과 당당한 건 다르다 -->
+        <!-- 귀 — 앞으로 쫑긋 세우면 기민하지만 순하다.
+             뒤로(끝이 오른쪽) 눕혀야 성난 말이 된다 — 말은 화나면 귀부터 눕힌다 -->
         <g filter="url(#pnBs)">
-          <path d="M64,10 C66,-2 63,-12 58,-15 C54,-8 54,3 55,13 Z" fill="var(--pony-shade)"/>
-          <path d="M55,8 C55,-4 50,-14 45,-16 C42,-8 44,3 47,13 Z" fill="var(--pony)"/>
-          <path d="M53,7 C53,-2 49,-9 46,-11 C44,-5 46,2 48,10 Z"
-            fill="var(--pony-mane)" opacity=".55"/>
+          <path d="M58,16 C56,4 60,-8 67,-11 C70,-4 68,7 65,19 Z" fill="var(--pony)"/>
+          <path d="M60,14 C59,5 62,-3 66,-6 C67,1 66,8 64,16 Z" fill="var(--pony-mane)" opacity=".6"/>
+          <path d="M68,20 C69,8 74,-1 80,-2 C81,6 76,14 74,23 Z" fill="var(--pony-shade)" opacity=".9"/>
         </g>
 
         <g clip-path="url(#pnHead)">
           <g filter="url(#pnBs)">
             <path d="${HEAD}" fill="var(--pony)"/>
-            <!-- 아래턱·주둥이 밑은 그늘, 콧등 능선과 이마는 빛 -->
-            <path d="M8,44 C16,54 26,56 36,51 C46,46 52,40 56,32 L60,60 L2,60 Z"
-              fill="var(--pony-shade)" opacity=".85"/>
-            <path d="M56,4 C46,5 38,10 30,18 C22,26 12,36 7,43 L2,30 L52,-6 Z"
-              fill="var(--pony-lit)" opacity=".32"/>
+            <!-- 아래턱·주둥이 밑은 그늘, 콧등 능선과 이마는 빛.
+                 두 다각형 모두 새 HEAD 의 모서리를 따라간다 -->
+            <path d="M15,54 C25,63 40,68 54,63 L50,82 L4,68 Z" fill="var(--pony-shade)" opacity=".85"/>
+            <path d="M60,12 C48,12 38,20 28,32 L46,26 L64,15 Z" fill="var(--pony-lit)" opacity=".3"/>
           </g>
-          <!-- 결은 주둥이(8,42)→후두(58,4) 축을 가로지른다 -->
+          <!-- 결은 주둥이(16,56)→후두(66,20) 축, 약 -36° 을 가로지른다 -->
           <g filter="url(#pnBs)">
-            ${daub(24, 8, 8, 58, 46, 145, "var(--pony-lit)", 0.08, 0.22, 1, 2.4, 3, 9)}
-            ${daub(18, 6, 28, 50, 56, 145, "var(--pony-shade)", 0.1, 0.3, 1.2, 2.6, 3, 8)}
-            ${daub(10, 14, 10, 54, 36, 145, "var(--pony-warm)", 0.06, 0.16, 1, 2, 2, 6)}
-          </g>
-          <!-- 유성(流星) — 이마에서 콧등으로 흐르는 흰 줄.
-               갈색 덩어리 하나로는 인상이 안 남는다. 얼굴에 한 줄 그어야 '저 말'이 된다.
-               색면으로 딱 칠하면 스티커가 되므로 붓자국으로 가장자리를 흩는다 -->
-          <g filter="url(#pnBs)">
-            <path d="M41,9 C35,16 27,26 19,37 C16,41 14,45 15,48
-                     C19,47 23,41 29,33 C35,25 43,15 46,10 Z"
-              fill="var(--pony-blaze)" opacity=".72"/>
-            ${daub(16, 14, 12, 44, 46, 143, "var(--pony-blaze)", 0.16, 0.4, 1, 3, 3, 9)}
-            ${daub(9, 16, 16, 40, 44, 143, "var(--pony-shade)", 0.06, 0.16, 1, 2, 2, 6)}
+            ${daub(24, 14, 16, 64, 54, 145, "var(--pony-lit)", 0.08, 0.22, 1, 2.4, 3, 9)}
+            ${daub(18, 12, 36, 56, 68, 145, "var(--pony-shade)", 0.1, 0.3, 1.2, 2.6, 3, 8)}
+            ${daub(10, 20, 18, 60, 44, 145, "var(--pony-warm)", 0.06, 0.16, 1, 2, 2, 6)}
           </g>
         </g>
 
         <!-- 얼굴 — 카리스마는 이목구비의 '또렷함'에서 나온다.
-             눈두덩 뼈로 눈을 감싸고, 콧구멍을 벌리고, 입을 야무지게 다문다 -->
+             눈두덩 뼈로 눈을 감싸고, 콧구멍을 크게 벌리고, 입을 야무지게 다문다. -->
         <g filter="url(#pnBs)">
           <!-- 광대뼈 — 눈 둘레를 먼저 밝게 띄운다. 이게 없으면 눈(짙은 색)이
                얼굴 그늘에 그대로 묻혀 흰 점 하나만 남는다 -->
-          <path d="M33,17 C39,10 50,11 54,18 C50,30 38,32 32,26 Z"
+          <path d="M33,36 C40,26 54,25 62,32 C58,44 44,48 34,43 Z"
             fill="var(--pony-lit)" opacity=".5"/>
           <!-- 눈썹 뼈 — 눈 위로 두껍게 내리누른다. 눈두덩이 수평이면 순한 눈이 되고,
                앞(코쪽)으로 처지게 기울이면 노려보는 눈이 된다 -->
-          <path d="M33,19 C38,11 48,10 53,16 C47,13 39,15 35,22 Z"
+          <path d="M35,31 C42,22 53,23 59,29 C52,26 43,27 37,34 Z"
             fill="var(--pony-shade)" opacity=".95"/>
           <!-- 눈 — 동그라미를 그리면 만화가 된다. 아몬드꼴로, 앞쪽을 뾰족하게 -->
-          <path d="M35,22 C39,16 47,16 50,21 C46,26 38,26 35,22 Z" fill="var(--pony-mane-dk)"/>
-          <path d="M35,22 C39,16 47,16 50,21" stroke="#0d0703" stroke-width="1.4"
+          <path d="M39,34 C45,28 52,29 56,34 C51,38 43,38 39,36 Z" fill="var(--pony-mane-dk)"/>
+          <!-- 위 눈꺼풀 — 한 줄 그어야 눈알이 아니라 '눈'으로 읽힌다 -->
+          <path d="M39,34 C45,28 52,29 56,34" stroke="#0d0703" stroke-width="1.4"
             stroke-linecap="round" fill="none"/>
-          <circle cx="44" cy="20" r="1.6" fill="#fff" opacity=".8"/>
-          <!-- 흰자 — 앞쪽 눈꼬리에 살짝 드러낸다 -->
-          <path d="M36,22 C38,20 40,20 41,21 C39,23 37,23 36,23 Z" fill="#e8dfd4" opacity=".5"/>
-          <!-- 콧구멍 — 벌름거린다. 동그라미로 그리면 검은 얼룩이 되므로
-               쉼표꼴로 — 위는 넓고 아래로 가늘게 말린다 -->
-          <path d="M11,43 C13,38 20,38 22,43 C23,47 18,49 15,49 C12,49 10,47 11,43 Z"
+          <circle cx="48" cy="33" r="1.6" fill="#fff" opacity=".8"/>
+          <!-- 흰자 — 앞쪽 눈꼬리에 살짝 드러내면 성난 눈이 된다 -->
+          <path d="M40,34 C42,32 44,32 45,33 C43,35 41,35 40,35 Z" fill="#e8dfd4" opacity=".5"/>
+          <!-- 콧구멍 — 성나면 크게 벌어진다. 다만 동그라미로 그리면 검은 얼룩이 된다.
+               말 콧구멍은 쉼표꼴 — 위는 넓고 아래로 가늘게 말린다 -->
+          <path d="M16,52 C18,47 24,46 27,50 C28,54 23,55 20,56 C17,56 15,55 16,52 Z"
             fill="var(--pony-mane-dk)"/>
-          <path d="M10,44 C12,39 20,38 23,42" stroke="var(--pony-lit)" stroke-width="1.2"
+          <!-- 콧방울 테두리 빛 — 구멍이 살에 뚫린 것으로 읽히게 -->
+          <path d="M15,53 C17,48 24,47 28,51" stroke="var(--pony-lit)" stroke-width="1.2"
             stroke-linecap="round" fill="none" opacity=".35"/>
           <!-- 입 — 야무지게 다문 한 줄 -->
-          <path d="M10,52 q8,3 13,-2" stroke="var(--pony-mane-dk)" stroke-width="1.8"
+          <path d="M15,63 q8,3 13,-1" stroke="var(--pony-mane-dk)" stroke-width="1.8"
             stroke-linecap="round" fill="none" opacity=".85"/>
           <!-- 하악각(볼 뒤 모서리) — 이 선이 있어야 머리가 덩어리로 읽힌다 -->
-          <path d="M33,52 C44,48 51,41 56,30" stroke="var(--pony-shade)" stroke-width="2.4"
+          <path d="M40,67 C54,65 63,56 68,42" stroke="var(--pony-shade)" stroke-width="2.4"
             stroke-linecap="round" fill="none" opacity=".5"/>
         </g>
 
-        <!-- 갈기 — 능선(58,4)→(106,46) 에서 목 옆면으로 쏟아진다.
-             다발 여섯을 길이·각도를 달리해 심고, 그 틈으로 목이 비치게 둔다.
-             (예전엔 여기에 털 240가닥을 불투명하게 겹쳐 발라 떡이 됐다) -->
+        <!-- 갈기 — 목덜미(62,16)에서 기갑(110,54)까지 능선을 따라 흘러내린다.
+             각도는 능선(≈38°)에 직각인 126° — 갈기는 목 옆면으로 '떨어지지',
+             목을 따라 눕지 않는다. 길이도 목 두께(≈40)를 넘기면 안 된다.
+             (한때 150°·46 으로 그었더니 얼굴까지 덮어 눈이 사라졌다) -->
         <g filter="url(#pnBs)">
-          <!-- 능선 밑 그늘 — 갈기가 목에서 '들려' 있어야 붙어 보이지 않는다.
-               이 얇은 어둠 한 겹이 떡과 털을 가른다 -->
-          <path d="M58,4 C82,4 100,20 106,46 C98,26 80,10 58,10 Z"
-            fill="var(--pony-mane-dk)" opacity=".5"/>
-          ${MANE.map(([x, y, a, l, w, fk], i) =>
-            lock(x, y, a, l, w, fk, MANE_COL[i], 0.96)
-          ).join("")}
-          <!-- 다발 앞모서리에만 윤기 — 전면에 뿌리면 지푸라기 단이 된다 -->
-          ${MANE.map(([x, y, a, l, w, fk], i) =>
-            i % 2 ? lock(x - 1, y, a - 3, l * 0.82, w * 0.32, fk, "var(--pony-mane-lit)", 0.5) : ""
-          ).join("")}
-          ${strand(22, 66, 10, 104, 44, 126, 10, 26, 1, 2.2)}
-          <!-- 앞머리(이마 갈기) — 귀 사이에서 이마로만 짧게, 눈 앞을 스치듯.
-               눈두덩(33~54, 10~26)을 덮으면 인상이 통째로 사라진다 -->
-          ${lock(55, 3, 152, 26, 9, 3, "var(--pony-mane-dk)", 0.95)}
-          ${lock(58, 5, 143, 19, 7, -2, "var(--pony-mane)", 0.85)}
+          ${hair(120, 62, 17, 118, 56, 126, 16, 36, 1.6, 3.6)}
+          ${hair(80, 64, 21, 114, 58, 120, 11, 27, 1.3, 3)}
+          ${hair(44, 68, 25, 110, 60, 114, 7, 18, 1, 2.2)}
+          <!-- 앞머리(이마 갈기) — 귀 사이에서 이마로만 짧게.
+               눈두덩(35~59, 22~38)을 덮으면 인상이 통째로 사라진다 -->
+          ${hair(16, 64, 12, 54, 19, 158, 5, 11, 1, 2.2)}
         </g>
       </g>
     </svg>`;
@@ -511,9 +432,9 @@
         <div class="modal-body" id="modalBody"></div>
       </div>
     </div>
-    <button class="pony-hit" data-panel="about" aria-label="제주'말' 더 알아보기"></button>
-    <button class="pony-cta" data-panel="about" aria-label="제주'말' 더 알아보기">
-      <span class="pony-bubble">제주'말' 더 알아보기<span class="pony-tail-tip"></span></span>
+    <button class="pony-hit" data-panel="about" aria-label="제주말 더 알아보기"></button>
+    <button class="pony-cta" data-panel="about" aria-label="제주 더 알아보기">
+      <span class="pony-bubble">제주 더 알아보기<span class="pony-tail-tip"></span></span>
     </button>`;
   while (chrome.firstElementChild) document.body.appendChild(chrome.firstElementChild);
 

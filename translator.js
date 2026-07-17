@@ -35,14 +35,35 @@
     // 2) 단어 치환
     for (const [a, b] of words) s = s.split(a).join(b);
     // 3) 어절별 어미 규칙 (문장부호 분리 후 적용)
-    s = s
-      .split(/(\s+)/)
-      .map((tok) => {
+    //
+    //    규칙은 [정규식, 치환] 또는 [정규식, 치환, 서법] 형식.
+    //      치환 — 문자열이거나, String.replace 에 그대로 넘기는 함수
+    //      서법 — 아래 글자들을 이어 붙인 문자열. 없으면 아무 때나.
+    //        "q" 물음표가 붙은 어절에만   · "d" 붙지 않은 어절에만
+    //        "f" 문장의 마지막 어절에만
+    //    q/d 가 필요한 이유: 물음표는 core 에서 떼어내므로 정규식으로는 볼 수 없는데,
+    //    제주어는 평서(먹었수다)와 의문(먹었수과?)의 어미가 아예 다르다.
+    //    f 가 필요한 이유: 종결어미는 문장 끝에만 온다. 이 구분이 없으면
+    //    감탄사 '와'가 '오라'(오+라)로, 명사 '무신 거'의 '거'가 어미로 오해받는다.
+    const toks = s.split(/(\s+)/);
+    let lastIdx = -1;
+    for (let i = toks.length - 1; i >= 0; i--) {
+      if (!/^\s*$/.test(toks[i])) { lastIdx = i; break; }
+    }
+    s = toks
+      .map((tok, i) => {
         if (/^\s+$/.test(tok)) return tok;
         const m = tok.match(/^(.*?)([.,!?…~]*)$/s);
         let core = m[1];
         const punc = m[2];
-        for (const [re, rep] of endings) {
+        const q = /[?？]/.test(punc);
+        const last = i === lastIdx;
+        for (const [re, rep, mood] of endings) {
+          if (mood) {
+            if (mood.includes("q") && !q) continue;
+            if (mood.includes("d") && q) continue;
+            if (mood.includes("f") && !last) continue;
+          }
           if (re.test(core)) {
             core = core.replace(re, rep);
             break;

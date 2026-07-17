@@ -10,7 +10,7 @@
 <!-- Pretendard (오픈소스, jsDelivr CDN) -->
 <link rel="stylesheet" as="style" crossorigin
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="style.css?v=24">
 </head>
 <body>
 
@@ -22,17 +22,27 @@
     <!-- ===== 랜딩 화면 ===== -->
     <section id="view-landing" class="view view-landing">
       <div class="landing-group">
-        <div class="landing-top">
-          <div class="hero-dol" id="heroDol" role="button" tabindex="0" aria-label="돌하르방 눌러서 번역 시작"></div>
-          <div class="speech-bubble">
-            <span class="speech-tail"></span>
-            안녕하수꽈,<br>무신 거 궁금하우꽈?
-          </div>
+        <p class="landing-lead">누게신디 물어보쿠과?</p>
+
+        <!-- 두 사람이 각자 한 방향씩 맡는다.
+             하나에 마우스를 올리면 다른 하나는 옅어지고,
+             비워진 자리에 그 사람의 말풍선이 뜬다. -->
+        <div class="picker" id="picker">
+          <button class="pick" data-mode="s2j" aria-label="돌하르방에게 물어보기 — 표준어를 제주말로 바꿔줍니다">
+            <span class="pick-face" id="pickDol"></span>
+            <span class="pick-name">하르방</span>
+            <span class="pick-dir">표준어 → 제주말</span>
+            <span class="pick-bubble" aria-hidden="true">안녕하수꽈,<br>무신 거 궁금하우꽈?</span>
+          </button>
+          <button class="pick" data-mode="j2s" aria-label="해녀에게 물어보기 — 제주말을 표준어로 바꿔줍니다">
+            <span class="pick-face" id="pickHae"></span>
+            <span class="pick-name">해녀</span>
+            <span class="pick-dir">제주말 → 표준어</span>
+            <span class="pick-bubble" aria-hidden="true">안녕하세요,<br>무엇이 궁금하세요?</span>
+          </button>
         </div>
-        <button class="start-btn" id="startBtn">
-          번역 원하민 <b>이디</b> 눌릅서 →
-        </button>
-        <p class="start-sub">돌하르방을 눌러도 시작되우다</p>
+
+        <p class="start-sub">둘 중 하나를 눌릅서</p>
       </div>
     </section>
 
@@ -43,7 +53,7 @@
           <button class="back-btn" id="backBtn" title="처음으로" aria-label="처음으로">←</button>
           <div class="head-avatar" id="headAvatar"></div>
           <div class="head-text">
-            <div class="head-title">돌하르방 사투리 번역기</div>
+            <div class="head-title" id="headTitle">돌하르방 사투리 번역기</div>
             <div class="head-sub" id="modeLabel">표준어 → 제주말</div>
           </div>
         </header>
@@ -67,15 +77,17 @@
   </div>
 
   <!-- 스크립트: 순서 중요 -->
-  <script src="config.js?v=10"></script>
-  <script src="dictionary.js?v=10"></script>
-  <script src="translator.js?v=10"></script>
-  <script src="sheets.js?v=10"></script>
-  <script src="scene.js?v=10"></script>
-  <script src="store.js?v=10"></script>
-  <script src="app.js?v=10"></script>
+  <script src="config.js?v=24"></script>
+  <!-- hangul.js는 어미 규칙이 받침을 뜯어볼 때 쓰므로 dictionary.js보다 먼저 -->
+  <script src="hangul.js?v=24"></script>
+  <script src="dictionary.js?v=24"></script>
+  <script src="translator.js?v=24"></script>
+  <script src="sheets.js?v=24"></script>
+  <script src="scene.js?v=24"></script>
+  <script src="store.js?v=24"></script>
+  <script src="app.js?v=24"></script>
   <!-- sky.js는 app.js가 renderScene()으로 배경을 만든 뒤에 실행돼야 한다 -->
-  <script src="sky.js?v=10"></script>
-  <script src="features.js?v=10"></script>
+  <script src="sky.js?v=24"></script>
+  <script src="features.js?v=24"></script>
 </body>
 </html>
